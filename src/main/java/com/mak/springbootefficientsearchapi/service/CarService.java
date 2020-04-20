@@ -12,26 +12,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
-public class CarService {
+public class CarService extends GenericCsv<Car> {
 
     private final CarRepository carRepository;
 
     @Autowired
     public CarService(CarRepository carRepository) {
+        super(Car.class);
         this.carRepository = carRepository;
     }
 
@@ -41,7 +39,7 @@ public class CarService {
      * @param id element ID
      * @throws EntityNotFoundException Exception when retrieve entity
      */
-    public void delete(Integer id) throws EntityNotFoundException {
+    public void delete(Integer id) {
         Car entity = carRepository.findById(id)
                                   .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id.toString())));
         carRepository.delete(entity);
@@ -52,7 +50,7 @@ public class CarService {
      * @return element
      * @throws EntityNotFoundException Exception when retrieve element
      */
-    public Car get(Integer id) throws EntityNotFoundException {
+    public Car get(Integer id) {
         return carRepository.findById(id)
                             .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id.toString())));
     }
@@ -69,7 +67,7 @@ public class CarService {
         if (isRequestPaged(headers)) {
             return get(spec, buildPageRequest(headers, sort));
         } else {
-            final List<Car> entities = get(spec, sort);
+            List<Car> entities = get(spec, sort);
             return new PagingResponse((long) entities.size(), 0L, 0L, 0L, 0L, entities);
         }
     }
@@ -79,8 +77,8 @@ public class CarService {
     }
 
     private Pageable buildPageRequest(HttpHeaders headers, Sort sort) {
-        final int page = Integer.parseInt(headers.get(PagingHeaders.PAGE_NUMBER.getName()).get(0));
-        final int size = Integer.parseInt(headers.get(PagingHeaders.PAGE_SIZE.getName()).get(0));
+        int page = Integer.parseInt(headers.get(PagingHeaders.PAGE_NUMBER.getName()).get(0));
+        int size = Integer.parseInt(headers.get(PagingHeaders.PAGE_SIZE.getName()).get(0));
         return PageRequest.of(page, size, sort);
     }
 
@@ -92,8 +90,8 @@ public class CarService {
      * @return retrieve elements with pagination
      */
     public PagingResponse get(Specification<Car> spec, Pageable pageable) {
-        final Page<Car> page = carRepository.findAll(spec, pageable);
-        final List<Car> content = page.getContent();
+        Page<Car> page = carRepository.findAll(spec, pageable);
+        List<Car> content = page.getContent();
         return new PagingResponse(page.getTotalElements(), (long) page.getNumber(), (long) page.getNumberOfElements(), pageable.getOffset(), (long) page.getTotalPages(), content);
     }
 
@@ -146,27 +144,11 @@ public class CarService {
         return carRepository.save(item);
     }
 
-    public void init(File file) throws IOException {
-        long header = 1L;
-        List<Car> carList = Files.lines(file.toPath())
-                                 .parallel()
-                                 .skip(header)
-                                 .map(transformLineToCar())
-                                 .collect(Collectors.toList());
-        carRepository.saveAll(carList);
+
+    @Async
+    public List<Car> uploadFile(MultipartFile multipartFile) throws IOException {
+        List<Car> carList = parseCsvFile(multipartFile);
+        return (List<Car>) carRepository.saveAll(carList);
     }
 
-    private Function<String, Car> transformLineToCar() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return line -> {
-            String[] data = line.split(";");
-            Car car = new Car();
-            car.setType(data[1]);
-            car.setCountry(data[2]);
-            car.setManufacturer(data[3]);
-            car.setCreateDate(LocalDate.parse(data[4], formatter));
-            car.setModel(data[5]);
-            return car;
-        };
-    }
 }

@@ -12,6 +12,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
@@ -26,11 +27,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.pivovarit.function.ThrowingFunction.unchecked;
 
 
 @Slf4j
@@ -100,5 +110,40 @@ public class CarController {
         headers.set(PagingHeaders.PAGE_TOTAL.getName(), String.valueOf(response.getPageTotal()));
         return headers;
     }
+
+    @ResponseBody
+    @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<List<Car>> uploadFile(@RequestParam(value = "files") List<MultipartFile> files) {
+        List<Car> cars = files.stream()
+                              .parallel()
+                              .map(unchecked(carService::uploadFile))
+                              .flatMap(Collection::stream)
+                              .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(cars);
+    }
+
+    @GetMapping(value = "/extract", produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Resource> extractFile(
+            @And({
+                    @Spec(path = "manufacturer", params = "manufacturer", spec = Like.class),
+                    @Spec(path = "model", params = "model", spec = Like.class),
+                    @Spec(path = "country", params = "country", paramSeparator =',', spec = In.class),
+                    @Spec(path = "type", params = "type", spec = Like.class),
+                    @Spec(path = "createDate", params = "createDate", spec = Equal.class),
+                    @Spec(path = "createDate", params = {"createDateGt", "createDateLt"}, spec = Between.class)
+            }) Specification<Car> spec,
+            Sort sort) throws IOException {
+        List<Car> cars = carService.get(spec, sort);
+        Resource resource = carService.generateCsvFile(cars);
+
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.ok()
+                             .contentType(MediaType.parseMediaType("application/octet-stream"))
+                             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Search_Extraction_" + now + ".csv\"")
+                             .body(resource);
+    }
+
 
 }
