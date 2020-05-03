@@ -1,0 +1,478 @@
+{
+	"info": {
+		"_postman_id": "cb4397f7-bdbb-48c8-8250-d62f0e33b070",
+		"name": "Search API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get all Cars",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars paginated",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text"
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars sorted",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars?sort=manufacturer,desc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "manufacturer,desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars filtered",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars?country=USA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "USA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars filtred paginated ",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text"
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars filtred sorted",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text"
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars filtred sorted paginated",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"type": "text",
+						"value": "0"
+					},
+					{
+						"key": "Page-Size",
+						"type": "text",
+						"value": "5"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars?country=USA&type=Small&sort=createDate,asc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "USA"
+						},
+						{
+							"key": "type",
+							"value": "Small"
+						},
+						{
+							"key": "sort",
+							"value": "createDate,asc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload csv file",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/cars/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "extract all Cars in csv file",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/cars/extract",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars",
+						"extract"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "extract all Cars sorted  in csv file",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"type": "text",
+						"value": "0",
+						"disabled": true
+					},
+					{
+						"key": "Page-Size",
+						"type": "text",
+						"value": "5",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars/extract?sort=manufacturer,desc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars",
+						"extract"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "manufacturer,desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "extract all Cars filtered in csv file",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars/extract?country=USA",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars",
+						"extract"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "USA"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "extract all Cars filtred sorted in csv file",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Page-Number",
+						"value": "0",
+						"type": "text"
+					},
+					{
+						"key": "Page-Size",
+						"value": "5",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/cars/extract?country=Japon&country=USA&type=Small&sort=createDate,desc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"cars",
+						"extract"
+					],
+					"query": [
+						{
+							"key": "country",
+							"value": "Japon"
+						},
+						{
+							"key": "country",
+							"value": "USA"
+						},
+						{
+							"key": "type",
+							"value": "Small"
+						},
+						{
+							"key": "sort",
+							"value": "createDate,desc"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
