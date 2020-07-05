@@ -1,4 +1,5 @@
  # Spring Boot: How to design efficient REST API?
+ [![BCH compliance](https://bettercodehub.com/edge/badge/Raouf25/Spring-Boot-efficient-search-API?branch=master)](https://bettercodehub.com/)
  
 Resource collections are oftentimes enormous, and when some data has to be retrieved from them, it would be simply not very efficient to always get the full list and browse it for specific items. Therefore we should design an optimized Search API.
 
