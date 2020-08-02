@@ -1,4 +1,6 @@
  # Spring Boot: How to design efficient REST API?
+ [![Build Status](https://travis-ci.org/Raouf25/Spring-Boot-efficient-search-API.svg?branch=master)](https://travis-ci.org/Raouf25/Spring-Boot-efficient-search-API)
+ [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Raouf25_Spring-Boot-efficient-search-API&metric=alert_status)](https://sonarcloud.io/dashboard?id=Raouf25_Spring-Boot-efficient-search-API)
  [![BCH compliance](https://bettercodehub.com/edge/badge/Raouf25/Spring-Boot-efficient-search-API?branch=master)](https://bettercodehub.com/)
  
 Resource collections are oftentimes enormous, and when some data has to be retrieved from them, it would be simply not very efficient to always get the full list and browse it for specific items. Therefore we should design an optimized Search API.
@@ -75,6 +77,11 @@ the respone should be:
 ```
 docker stop `docker container ls | grep "spring-boot-efficient-search-api:*" | awk '{ print $1 }'`
 ```
+
+## Live Demo
+This project is deployed in https://efficient-search-api.herokuapp.com/api/cars
+
+Let's try: https://efficient-search-api.herokuapp.com/api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
 
 ## License
 For more details please see this **[medium post](https://medium.com/quick-code/spring-boot-how-to-design-efficient-search-rest-api-c3a678b693a0)** .
