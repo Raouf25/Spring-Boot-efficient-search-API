@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
-
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -77,8 +77,8 @@ public class CarService extends GenericCsv<Car> {
     }
 
     private Pageable buildPageRequest(HttpHeaders headers, Sort sort) {
-        int page = Integer.parseInt(headers.get(PagingHeaders.PAGE_NUMBER.getName()).get(0));
-        int size = Integer.parseInt(headers.get(PagingHeaders.PAGE_SIZE.getName()).get(0));
+        int page = Integer.parseInt(Objects.requireNonNull(headers.get(PagingHeaders.PAGE_NUMBER.getName())).get(0));
+        int size = Integer.parseInt(Objects.requireNonNull(headers.get(PagingHeaders.PAGE_SIZE.getName())).get(0));
         return PageRequest.of(page, size, sort);
     }
 
