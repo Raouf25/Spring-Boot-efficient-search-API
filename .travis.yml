@@ -12,7 +12,7 @@ language: java
 # A list of available JDKs in Trusty can be seed in:
 # https://docs.travis-ci.com/user/reference/xenial/#jvm-clojure-groovy-java-scala-support
 jdk:
-- openjdk8
+- openjdk11
 addons:
   sonarcloud:
     organization: raouf25-github
