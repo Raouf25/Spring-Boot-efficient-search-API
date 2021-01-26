@@ -1,11 +1,11 @@
- # Spring Boot: How to design efficient REST API?
- [![Build Status](https://travis-ci.org/Raouf25/Spring-Boot-efficient-search-API.svg?branch=master)](https://travis-ci.org/Raouf25/Spring-Boot-efficient-search-API)
+ # Spring Boot: How to design an efficient REST API?
+ [![Build Status](https://travis-ci.com/Raouf25/Spring-Boot-efficient-search-API.svg?branch=master)](https://travis-ci.com/Raouf25/Spring-Boot-efficient-search-API)
  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Raouf25_Spring-Boot-efficient-search-API&metric=alert_status)](https://sonarcloud.io/dashboard?id=Raouf25_Spring-Boot-efficient-search-API)
  [![BCH compliance](https://bettercodehub.com/edge/badge/Raouf25/Spring-Boot-efficient-search-API?branch=master)](https://bettercodehub.com/)
  
-Resource collections are oftentimes enormous, and when some data has to be retrieved from them, it would be simply not very efficient to always get the full list and browse it for specific items. Therefore we should design an optimized Search API.
+Resource collections are often enormous, and when some data has to be retrieved from them, it would be only not very efficient to always get the full list and browse it for specific items. Therefore we should design an optimized Search API.
 
-A few of the most important features for consuming an API are:
+A few of the essential features for consuming an API are:
 - **Filtering:** 
 to narrow down the query results by specific parameters, eg. creation date, or country
 ```
@@ -21,8 +21,8 @@ GET /api/cars?sort=createDate,desc
 ```
 
 - **Paging:**  
-uses “size” to narrow down the number of results shown to a specific number, and “offset” to specify which part of the results range to be shown 
-— this is important in cases where the number of total results is greater than the one presented, this works like a pagination you may encounter on many websites
+uses “size” to narrow down the number of results shown to a specific number and “offset” to specify which part of the results range to be shown 
+— this is important in cases where the number of total results is greater than the one presented, this works like pagination you may encounter on many websites
 Usually, these features are used by adding a so-called query parameter to the endpoint that is being called. 
 ```
 GET /api/cars?limit=100
@@ -33,7 +33,7 @@ All together:
 ```
 GET /api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
 ```
-This query should result in the list of 100 cars from the USA, sorted descending by the creation date, and the presented records are on the second page, which means are from a 101–200 record number range.
+This query should result in the list of 100 cars from the USA, sorted descending by the creation date, and the presented records are on the second page, which means they are from a 101–200 record number range.
 
 ### How to run the project
 
@@ -48,7 +48,7 @@ $  docker build -t="spring-boot-efficient-search-api" --force-rm=true .
 ```
 This will first run maven build to create jar package and then build hello-world image using built jar package.
 
->Note:if you run this command for first time it will take some time in order to download base image from [DockerHub](https://hub.docker.com/)
+>Note: if you run this command for the first time, it will take some time to download the base image from [DockerHub](https://hub.docker.com/)
 
 ##### Run Docker Container
 ```
@@ -61,7 +61,7 @@ $ docker run -p 8080:8080 -it --rm spring-boot-efficient-search-api
 $  curl localhost:8080/api/cars/1
 ```
 
-the respone should be:
+the response should be:
 ```json
 {
    "id":1,
