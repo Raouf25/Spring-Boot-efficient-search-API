@@ -33,12 +33,12 @@ import static com.pivovarit.function.ThrowingFunction.unchecked;
 
 public abstract class GenericCsv<T> {
 
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static String cellSeparator = ";";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final String CELL_SEPARATOR = ";";
 
     private final Class<T> clazz;
 
-    public GenericCsv(Class<T> clazz) {
+    protected GenericCsv(Class<T> clazz) {
         this.clazz = clazz;
     }
 
@@ -50,7 +50,7 @@ public abstract class GenericCsv<T> {
     public List<T> parseCsvFile(MultipartFile multipartFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
 
-        List<String> header = Arrays.asList(bufferedReader.readLine().split(cellSeparator));
+        List<String> header = Arrays.asList(bufferedReader.readLine().split(CELL_SEPARATOR));
         Map<String, Method> setMap = setterMethodsMap();
         return getList(bufferedReader, header, setMap);
     }
@@ -58,7 +58,7 @@ public abstract class GenericCsv<T> {
     private List<T> getList(BufferedReader bufferedReader, List<String> header, Map<String, Method> setMap) {
         return bufferedReader.lines()
                              .parallel()
-                             .map(line -> line.split(cellSeparator))
+                             .map(line -> line.split(CELL_SEPARATOR))
                              .map(lineValues -> IntStream.range(0, lineValues.length)
                                                          .boxed()
                                                          .collect(Collectors.toMap(header::get, i -> lineValues[i])))
@@ -80,7 +80,7 @@ public abstract class GenericCsv<T> {
 
     private Object convert(Class<?> targetType, String text) {
         if (targetType.toString().contains("LocalDate")) {
-            return LocalDate.parse(text, formatter);
+            return LocalDate.parse(text, FORMATTER);
         }
         PropertyEditor editor = PropertyEditorManager.findEditor(targetType);
         editor.setAsText(text);
