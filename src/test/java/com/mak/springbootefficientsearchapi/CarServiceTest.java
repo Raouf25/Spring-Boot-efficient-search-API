@@ -36,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,7 +67,7 @@ public class CarServiceTest {
 	@Test
 	public void get_should_return_the_entity() {
 		// Given
-		when(carRepository.findById(eq(1))).thenReturn(Optional.of(Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29))));
+		when(carRepository.findById(1)).thenReturn(Optional.of(Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29))));
 
 		// When
 		Car foundCar = carService.get(1);
@@ -228,7 +227,7 @@ public class CarServiceTest {
 	@Test
 	public void delete() {
 		// Given
-		when(carRepository.findById(eq(1))).thenReturn(Optional.of(Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29))));
+		when(carRepository.findById(1)).thenReturn(Optional.of(Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29))));
 		ArgumentCaptor<Car> argumentCaptor = ArgumentCaptor.forClass(Car.class);
 
 		// When
