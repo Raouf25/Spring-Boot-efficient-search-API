@@ -41,7 +41,7 @@ public class CarService extends GenericCsv<Car> {
      */
     public void delete(Integer id) {
         Car entity = carRepository.findById(id)
-                                  .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id.toString())));
+                                  .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
         carRepository.delete(entity);
     }
 
@@ -52,7 +52,7 @@ public class CarService extends GenericCsv<Car> {
      */
     public Car get(Integer id) {
         return carRepository.findById(id)
-                            .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id.toString())));
+                            .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
     }
 
     /**
