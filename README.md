@@ -1,5 +1,4 @@
  # Spring Boot: How to design an efficient REST API?
- [![Build Status](https://travis-ci.com/Raouf25/Spring-Boot-efficient-search-API.svg?branch=master)](https://travis-ci.com/Raouf25/Spring-Boot-efficient-search-API)
  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Raouf25_Spring-Boot-efficient-search-API&metric=alert_status)](https://sonarcloud.io/dashboard?id=Raouf25_Spring-Boot-efficient-search-API)
  [![BCH compliance](https://bettercodehub.com/edge/badge/Raouf25/Spring-Boot-efficient-search-API?branch=master)](https://bettercodehub.com/)
  
