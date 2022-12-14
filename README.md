@@ -78,9 +78,9 @@ docker stop `docker container ls | grep "spring-boot-efficient-search-api:*" | a
 ```
 
 ## Live Demo
-This project is deployed in https://efficient-search-api.herokuapp.com/api/cars
+This project is deployed in https://spring-boot-efficient-search-api.fly.dev/api/cars
 
-Let's try: https://efficient-search-api.herokuapp.com/api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
+Let's try: https://spring-boot-efficient-search-api.fly.dev/api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
 
 ## License
 For more details please see this **[medium post](https://medium.com/quick-code/spring-boot-how-to-design-efficient-search-rest-api-c3a678b693a0)** .
