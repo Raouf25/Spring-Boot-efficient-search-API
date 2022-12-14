@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "cb4397f7-bdbb-48c8-8250-d62f0e33b070",
 		"name": "Search API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1075867"
 	},
 	"item": [
 		{
@@ -11,12 +12,30 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/cars",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
+					"path": [
+						"api",
+						"cars"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all Cars Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{http}}://{{domaine}}/api/cars",
+					"protocol": "{{http}}",
+					"host": [
+						"{{domaine}}"
+					],
 					"path": [
 						"api",
 						"cars"
@@ -45,12 +64,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -81,12 +99,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars?sort=manufacturer,desc",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars?sort=manufacturer,desc",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -123,12 +140,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars?country=USA",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars?country=USA",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -163,12 +179,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -197,12 +212,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -231,12 +245,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars?country=USA&type=Small&sort=createDate,asc",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars?country=USA&type=Small&sort=createDate,asc",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars"
@@ -275,12 +288,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/cars/upload",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars/upload",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars",
@@ -288,7 +300,82 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "upload csv file",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/cars/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cars",
+								"upload"
+							]
+						}
+					},
+					"status": "Unsupported Media Type",
+					"code": 415,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 20 Jun 2020 01:43:52 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"timestamp\": \"2020-06-20T01:43:52.578+0000\",\n    \"status\": 415,\n    \"error\": \"Unsupported Media Type\",\n    \"message\": \"Content type '' not supported\",\n    \"path\": \"/api/cars/upload\"\n}"
+				}
+			]
 		},
 		{
 			"name": "extract all Cars in csv file",
@@ -319,12 +406,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/cars/extract",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars/extract",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars",
@@ -356,12 +442,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars/extract?sort=manufacturer,desc",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars/extract?sort=manufacturer,desc",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars",
@@ -399,12 +484,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars/extract?country=USA",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars/extract?country=USA",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars",
@@ -440,12 +524,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/api/cars/extract?country=Japon&country=USA&type=Small&sort=createDate,desc",
-					"protocol": "http",
+					"raw": "{{http}}://{{domaine}}/api/cars/extract?country=Japon&country=USA&type=Small&sort=createDate,desc",
+					"protocol": "{{http}}",
 					"host": [
-						"localhost"
+						"{{domaine}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"cars",
@@ -473,6 +556,5 @@
 			},
 			"response": []
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
