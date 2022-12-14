@@ -15,13 +15,19 @@
     <description>Demo project for Spring Boot efficient search api</description>
 
     <properties>
-        <sonar.organization>raouf25-github</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <java.version>11</java.version>
 
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
         <!-- SonarCloud -->
+        <sonar.organization>raouf25-github</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/report-aggregate/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+
     </properties>
 
     <dependencies>
