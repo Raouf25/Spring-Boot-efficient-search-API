@@ -11,21 +11,13 @@ import org.supercsv.prefs.CsvPreference;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,14 +49,14 @@ public abstract class GenericCsv<T> {
 
     private List<T> getList(BufferedReader bufferedReader, List<String> header, Map<String, Method> setMap) {
         return bufferedReader.lines()
-                             .parallel()
-                             .map(line -> line.split(CELL_SEPARATOR))
-                             .map(lineValues -> IntStream.range(0, lineValues.length)
-                                                         .boxed()
-                                                         .collect(Collectors.toMap(header::get, i -> lineValues[i])))
-                             .peek(mapcar -> mapcar.remove("id"))
-                             .map(unchecked(mapcar2 -> createCar(mapcar2, setMap)))
-                             .collect(Collectors.toList());
+                .parallel()
+                .map(line -> line.split(CELL_SEPARATOR))
+                .map(lineValues -> IntStream.range(0, lineValues.length)
+                        .boxed()
+                        .collect(Collectors.toMap(header::get, i -> lineValues[i])))
+                .peek(mapcar -> mapcar.remove("id"))
+                .map(unchecked(mapcar2 -> createCar(mapcar2, setMap)))
+                .collect(Collectors.toList());
     }
 
     private T createCar(Map<String, String> mapEntity, Map<String, Method> setMap) throws InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -89,8 +81,8 @@ public abstract class GenericCsv<T> {
 
     private Map<String, Method> setterMethodsMap() {
         return Arrays.stream(getClazz().getMethods())
-                     .filter(method -> method.getName().startsWith("set") && !"getClass".equals(method.getName()))
-                     .collect(Collectors.toMap(this::getColumnName, method -> method));
+                .filter(method -> method.getName().startsWith("set") && !"getClass".equals(method.getName()))
+                .collect(Collectors.toMap(this::getColumnName, method -> method));
     }
 
     private String getColumnName(Method method) {
@@ -126,25 +118,25 @@ public abstract class GenericCsv<T> {
 
     private Map<String, Object> buildMapLine(List<Method> methods, T line) {
         return methods.stream()
-                      .parallel()
-                      .collect(Collectors.toMap(this::getColumnName,
-                                                unchecked(method -> line.getClass().getMethod(method.getName()).invoke(line))));
+                .parallel()
+                .collect(Collectors.toMap(this::getColumnName,
+                        unchecked(method -> line.getClass().getMethod(method.getName()).invoke(line))));
     }
 
 
     private List<Method> getMethodsList(List<T> clazz, List<String> noNeededColumn) {
         return Arrays.stream(clazz.get(0).getClass().getMethods())
-                     .parallel()
-                     .filter(method -> method.getName().startsWith("get")
-                             && !"getClass".equals(method.getName())
-                             && !noNeededColumn.contains(getColumnName(method)))
-                     .sorted(Comparator.comparing(this::getColumnName))
-                     .collect(Collectors.toList());
+                .parallel()
+                .filter(method -> method.getName().startsWith("get")
+                        && !"getClass".equals(method.getName())
+                        && !noNeededColumn.contains(getColumnName(method)))
+                .sorted(Comparator.comparing(this::getColumnName))
+                .collect(Collectors.toList());
     }
 
     private String[] getHeader(List<Method> methods) {
         return methods.stream()
-                      .map(this::getColumnName)
-                      .toArray(String[]::new);
+                .map(this::getColumnName)
+                .toArray(String[]::new);
     }
 }
