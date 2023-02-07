@@ -4,6 +4,7 @@ import com.mak.springbootefficientsearchapi.entity.Car;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingHeaders;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingResponse;
 import com.mak.springbootefficientsearchapi.repository.CarRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -41,7 +41,7 @@ public class CarService extends GenericCsv<Car> {
      */
     public void delete(Integer id) {
         Car entity = carRepository.findById(id)
-                                  .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
         carRepository.delete(entity);
     }
 
@@ -52,7 +52,7 @@ public class CarService extends GenericCsv<Car> {
      */
     public Car get(Integer id) {
         return carRepository.findById(id)
-                            .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Can not find the entity car (%s = %s).", "id", id)));
     }
 
     /**
