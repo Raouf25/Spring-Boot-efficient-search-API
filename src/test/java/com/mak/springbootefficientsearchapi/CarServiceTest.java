@@ -6,7 +6,6 @@ import com.mak.springbootefficientsearchapi.entity.utils.PagingResponse;
 import com.mak.springbootefficientsearchapi.repository.CarRepository;
 import com.mak.springbootefficientsearchapi.service.CarService;
 import com.mak.springbootefficientsearchapi.util.Builder;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
