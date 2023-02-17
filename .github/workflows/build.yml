@@ -38,6 +38,9 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Raouf25_Spring-Boot-efficient-search-API
 
   deploy:
+    environment:
+      name: dev-environment
+      url: https://spring-boot-efficient-search-api.fly.dev/api/cars
     name: Deploy app
     needs: build
     runs-on: ubuntu-latest
