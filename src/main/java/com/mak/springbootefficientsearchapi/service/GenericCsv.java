@@ -59,7 +59,7 @@ public abstract class GenericCsv<T> {
                 .collect(Collectors.toList());
     }
 
-    private T createCar(Map<String, String> mapEntity, Map<String, Method> setMap) throws InvocationTargetException, IllegalAccessException, InstantiationException {
+    private T createCar(Map<String, String> mapEntity, Map<String, Method> setMap) throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         T t = instantiateObject(this.clazz);
         for (Map.Entry<String, String> entry : mapEntity.entrySet()) {
             String k = entry.getKey();
@@ -90,11 +90,8 @@ public abstract class GenericCsv<T> {
     }
 
 
-    public <T> T instantiateObject(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-//        T t;
-//      t = new T();   // This is what you want to do but will cause compile error.
-//      return    t = cls.newInstance();  // use reflection to create instance
-        return clazz.newInstance();  // use reflection to create instance
+    public T instantiateObject(Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return clazz.getDeclaredConstructor().newInstance();  // use reflection to create instance
     }
 
 
