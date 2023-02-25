@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mak.springbootefficientsearchapi.controller.CarController;
 import com.mak.springbootefficientsearchapi.entity.Car;
+import com.mak.springbootefficientsearchapi.model.Vehicle;
 import com.mak.springbootefficientsearchapi.service.CarService;
 import com.mak.springbootefficientsearchapi.util.Builder;
 import org.assertj.core.api.Assertions;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -37,9 +39,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class CarControllerTest {
 
+    private Car car;
+    private Vehicle vehicle;
     @Mock
     private CarService carService;
-    private Car car;
+
+    @Mock
+    private ModelMapper modelMapper;
+
     @InjectMocks
     private CarController carController;
 
@@ -49,12 +56,14 @@ public class CarControllerTest {
     @BeforeEach
     public void setup() {
         car = Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
+        vehicle = Builder.vehicle( "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
         mockMvc = MockMvcBuilders.standaloneSetup(carController).build();
     }
 
     @AfterEach
     void tearDown() {
         car = null;
+        vehicle = null;
     }
 
     @Test
@@ -90,11 +99,12 @@ public class CarControllerTest {
 
     @Test
     void PostMappingOfCar() throws Exception {
+        when(modelMapper.map(any(),any())).thenReturn(car);
         when(carService.create(any())).thenReturn(car);
 
         mockMvc.perform(post("/api/cars").
                         contentType(MediaType.APPLICATION_JSON).
-                        content(asJsonString(car))).
+                        content(asJsonString(vehicle))).
                 andExpect(status().isCreated());
 
         verify(carService, times(1)).create(any());
