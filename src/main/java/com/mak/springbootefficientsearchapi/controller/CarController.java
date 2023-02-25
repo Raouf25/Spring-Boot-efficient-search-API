@@ -3,6 +3,7 @@ package com.mak.springbootefficientsearchapi.controller;
 import com.mak.springbootefficientsearchapi.entity.Car;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingHeaders;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingResponse;
+import com.mak.springbootefficientsearchapi.model.Vehicle;
 import com.mak.springbootefficientsearchapi.service.CarService;
 import lombok.extern.slf4j.Slf4j;
 import net.kaczmarzyk.spring.data.jpa.domain.Between;
@@ -11,6 +12,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.In;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
@@ -39,23 +41,28 @@ public class CarController {
 
     private final CarService carService;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public CarController(CarService carService) {
+    public CarController(CarService carService, ModelMapper modelMapper) {
         this.carService = carService;
+        this.modelMapper = modelMapper;
     }
 
     @Transactional
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public Car create(@RequestBody Car item) {
-        return carService.create(item);
+    public Car create(@RequestBody Vehicle vehicle) {
+        Car car = modelMapper.map(vehicle, Car.class);
+        return carService.create(car);
     }
 
     @Transactional
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Car update(@PathVariable(name = "id") Integer id, @RequestBody Car item) {
-        return carService.update(id, item);
+    public Car update(@PathVariable(name = "id") Integer id, @RequestBody Vehicle vehicle) {
+        Car car = modelMapper.map(vehicle, Car.class);
+        return carService.update(id, car);
     }
 
     @Transactional
