@@ -1,6 +1,7 @@
 package com.mak.springbootefficientsearchapi.util;
 
 import com.mak.springbootefficientsearchapi.entity.Car;
+import com.mak.springbootefficientsearchapi.model.Vehicle;
 
 import java.time.LocalDate;
 
@@ -15,6 +16,15 @@ public class Builder {
         car.setCountry(country);
         car.setCreateDate(createDate);
         return car;
+    }
+    public static Vehicle vehicle(String manufacturer, String model, String type, String country, LocalDate createDate) {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setManufacturer(manufacturer);
+        vehicle.setModel(model);
+        vehicle.setType(type);
+        vehicle.setCountry(country);
+        vehicle.setCreateDate(createDate);
+        return vehicle;
     }
 
 }
