@@ -1,0 +1,84 @@
+name: Code Quality Check - Dependabot
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Se lance chaque heure
+
+  # to fix comment : Runs on pull request targeting any branch except the default branch main
+  pull_request:
+    branches-ignore:
+      - main
+    types: [opened, synchronize, reopened]
+
+  push:
+    branches:
+      - dependabot/*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  FLY_API_TOKEN: ${{ secrets.SPRING_BOOT_ASYNCHRONOUS_API_FLY_API_TOKEN }}
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+
+jobs:
+  analyze_code:
+    name: Analyze Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      # Set up the Java Development Kit (JDK) version 19
+      - name: Set up JDK 19
+        uses: actions/setup-java@v1
+        with:
+          java-version: 19
+
+      # Cache Sonar packages to speed up the build process
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      # Cache Maven packages to speed up the build process
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      # Build and analyze the code using Maven and SonarCloud
+      - name: Analyze Code
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPENDABOT_GITHUB_TOKEN }} # Utilisation du token de dependabot si c'est lui qui a lancé l'exécution
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Raouf25_spring-boot-asynchronous-api
+
+      # Si l'analyse de code a réussi, on procède au merge de la branche dans main
+      - name: Merge Branch if Analysis Passes
+        if: ${{ job.status == 'success' }}
+        uses: pullreminders/merge-action@v6.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          method: squash
+          delete-branch: true
+          branch: ${{ github.head_ref }}
+          base: main
