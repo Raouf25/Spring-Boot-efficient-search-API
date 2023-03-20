@@ -177,6 +177,7 @@ class CarServiceTest {
         // Given
         Car car = Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
 
+        when(carRepository.findById(any())).thenReturn(Optional.of(car));
         when(carRepository.save(any())).thenReturn(car);
         ArgumentCaptor<Car> argument = ArgumentCaptor.forClass(Car.class);
 
