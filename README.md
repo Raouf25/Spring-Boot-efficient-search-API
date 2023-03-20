@@ -7,7 +7,7 @@ A few of the essential features for consuming an API are:
 - **Filtering:** 
 to narrow down the query results by specific parameters, eg. creation date, or country
 ```
-GET /api/cars?country=USA
+GET /api/cars?country=Japan
 GET /api/cars?createDate=2019–11–11
 ```
 
@@ -29,9 +29,9 @@ GET /api/cars?offset=2
 
 All together:
 ```
-GET /api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
+GET /api/cars?country=Japan&sort=createDate,desc&limit=100&offset=2
 ```
-This query should result in the list of 100 cars from the USA, sorted descending by the creation date, and the presented records are on the second page, which means they are from a 101–200 record number range.
+This query should result in the list of 100 cars from the Japan, sorted descending by the creation date, and the presented records are on the second page, which means they are from a 101–200 record number range.
 
 ### How to run the project
 
@@ -66,7 +66,7 @@ the response should be:
    "manufacturer":"Acura",
    "model":"Integra",
    "type":"Small",
-   "country":"Japon",
+   "country":"Japan",
    "createDate":"1931-02-01"
 }
 ```
@@ -79,7 +79,7 @@ docker stop `docker container ls | grep "spring-boot-efficient-search-api:*" | a
 ## Live Demo
 This project is deployed in https://spring-boot-efficient-search-api.fly.dev/api/cars
 
-Let's try: https://spring-boot-efficient-search-api.fly.dev/api/cars?country=USA&sort=createDate,desc&limit=100&offset=2
+Let's try: https://spring-boot-efficient-search-api.fly.dev/api/cars?country=Japan&sort=createDate,desc&limit=100&offset=2
 
 ## License
 For more details please see this **[medium post](https://medium.com/quick-code/spring-boot-how-to-design-efficient-search-rest-api-c3a678b693a0)** .
