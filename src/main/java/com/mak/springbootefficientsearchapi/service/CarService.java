@@ -126,12 +126,11 @@ public class CarService extends GenericCsv<Car> {
      * @throws EntityNotFoundException Exception when retrieve entity
      */
     public Car update(Integer id, Car item) {
-        if (item.getId() == null) {
-            throw new EntityNotFoundException("Can not update entity, entity without ID.");
-        } else if (!id.equals(item.getId())) {
-            throw new EntityNotFoundException(String.format("Can not update entity, the resource ID (%d) not match the objet ID (%d).", id, item.getId()));
-        }
-        return save(item);
+        return carRepository.findById(id)
+                .map(carFound -> {
+                    item.setId(id);
+                    return save(item);
+                }).orElseThrow(()-> new EntityNotFoundException("Can not update entity, entity without ID."));
     }
 
     /**
