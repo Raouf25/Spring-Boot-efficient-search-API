@@ -12,10 +12,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars",
+					"raw": "{{http}}://{{domain}}/api/cars",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -31,10 +31,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars",
+					"raw": "{{http}}://{{domain}}/api/cars",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -64,10 +64,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars",
+					"raw": "{{http}}://{{domain}}/api/cars",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -99,10 +99,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars?sort=manufacturer,desc",
+					"raw": "{{http}}://{{domain}}/api/cars?sort=manufacturer,desc",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -140,10 +140,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars?country=USA",
+					"raw": "{{http}}://{{domain}}/api/cars?country=Japan",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -152,7 +152,7 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "USA"
+							"value": "Japan"
 						}
 					]
 				}
@@ -160,7 +160,7 @@
 			"response": []
 		},
 		{
-			"name": "get all Cars filtred paginated ",
+			"name": "get all Cars filtered paginated ",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -179,10 +179,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars",
+					"raw": "{{http}}://{{domain}}/api/cars",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -193,7 +193,7 @@
 			"response": []
 		},
 		{
-			"name": "get all Cars filtred sorted",
+			"name": "get all Cars filtered sorted",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -212,10 +212,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars",
+					"raw": "{{http}}://{{domain}}/api/cars",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -226,7 +226,7 @@
 			"response": []
 		},
 		{
-			"name": "get all Cars filtred sorted paginated",
+			"name": "get all Cars filtered sorted paginated",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -245,10 +245,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars?country=USA&type=Small&sort=createDate,asc",
+					"raw": "{{http}}://{{domain}}/api/cars?country=Japan&type=Small&sort=createDate,asc",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -257,7 +257,7 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "USA"
+							"value": "Japan"
 						},
 						{
 							"key": "type",
@@ -283,15 +283,15 @@
 						{
 							"key": "files",
 							"type": "file",
-							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+							"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars/upload",
+					"raw": "{{http}}://{{domain}}/api/cars/upload",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -319,17 +319,17 @@
 								{
 									"key": "files",
 									"type": "file",
-									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+									"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 								},
 								{
 									"key": "files",
 									"type": "file",
-									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+									"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 								},
 								{
 									"key": "files",
 									"type": "file",
-									"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+									"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 								}
 							]
 						},
@@ -391,25 +391,25 @@
 						{
 							"key": "files",
 							"type": "file",
-							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+							"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 						},
 						{
 							"key": "files",
 							"type": "file",
-							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+							"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 						},
 						{
 							"key": "files",
 							"type": "file",
-							"src": "/C:/Users/abderraoufmak/Desktop/testgithub/spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
+							"src": "./spring-boot-efficient-search-api/src/main/resources/static/Cars.csv"
 						}
 					]
 				},
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars/extract",
+					"raw": "{{http}}://{{domain}}/api/cars/extract",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -442,10 +442,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars/extract?sort=manufacturer,desc",
+					"raw": "{{http}}://{{domain}}/api/cars/extract?sort=manufacturer,desc",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -484,10 +484,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars/extract?country=USA",
+					"raw": "{{http}}://{{domain}}/api/cars/extract?country=Japan",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -497,7 +497,7 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "USA"
+							"value": "Japan"
 						}
 					]
 				}
@@ -505,7 +505,7 @@
 			"response": []
 		},
 		{
-			"name": "extract all Cars filtred sorted in csv file",
+			"name": "extract all Cars filtered sorted in csv file",
 			"protocolProfileBehavior": {
 				"disabledSystemHeaders": {}
 			},
@@ -524,10 +524,10 @@
 					}
 				],
 				"url": {
-					"raw": "{{http}}://{{domaine}}/api/cars/extract?country=Japon&country=USA&type=Small&sort=createDate,desc",
+					"raw": "{{http}}://{{domain}}/api/cars/extract?country=Japan&country=Japan&type=Small&sort=createDate,desc",
 					"protocol": "{{http}}",
 					"host": [
-						"{{domaine}}"
+						"{{domain}}"
 					],
 					"path": [
 						"api",
@@ -537,11 +537,11 @@
 					"query": [
 						{
 							"key": "country",
-							"value": "Japon"
+							"value": "Japan"
 						},
 						{
 							"key": "country",
-							"value": "USA"
+							"value": "Japan"
 						},
 						{
 							"key": "type",
