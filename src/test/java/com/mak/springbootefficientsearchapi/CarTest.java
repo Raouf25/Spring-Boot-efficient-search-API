@@ -4,13 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mak.springbootefficientsearchapi.entity.Car;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -23,15 +23,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.util.Assert.notNull;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class CarTest {
+class CarTest {
 
     private ResultActions result;
 
@@ -44,7 +44,7 @@ public class CarTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Before
+    @BeforeEach
     public void setup() {
         notNull(webClient, "MockMVC can not be null");
 
@@ -55,7 +55,7 @@ public class CarTest {
     }
 
     @Test
-    public void should_return_car_when_get_car_by_id() throws Exception {
+    void should_return_car_when_get_car_by_id() throws Exception {
         result = webClient.perform(get("/api/cars/1"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is2xxSuccessful());
@@ -71,7 +71,7 @@ public class CarTest {
     }
 
     @Test
-    public void should_return_car_list_when_get_car_sorted_by_createDate_in_ASC_order() throws Exception {
+    void should_return_car_list_when_get_car_sorted_by_createDate_in_ASC_order() throws Exception {
         result = webClient.perform(get("/api/cars?sort=createDate,asc"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is2xxSuccessful());
@@ -88,7 +88,7 @@ public class CarTest {
     }
 
     @Test
-    public void should_return_car_list_when_get_car_for_specific_criteria_sorted_by_createDate_in_DESC_order() throws Exception {
+    void should_return_car_list_when_get_car_for_specific_criteria_sorted_by_createDate_in_DESC_order() throws Exception {
         result = webClient.perform(get("/api/cars?country=Japan&type=Small&sort=createDate,desc"))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is2xxSuccessful());
@@ -106,7 +106,7 @@ public class CarTest {
     }
 
     @Test
-    public void should_return_car_list_page_when_get_car_for_specific_criteria_sorted_by_createDate_in_DESC_order() throws Exception {
+    void should_return_car_list_page_when_get_car_for_specific_criteria_sorted_by_createDate_in_DESC_order() throws Exception {
         result = webClient.perform(get("/api/cars?country=Germany&type=Sedan&sort=createDate,desc")
                         .header("Page-Number", 1)
                         .header("Page-Size", 10))
