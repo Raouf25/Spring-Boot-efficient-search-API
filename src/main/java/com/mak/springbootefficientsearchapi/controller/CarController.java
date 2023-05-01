@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.pivovarit.function.ThrowingFunction.unchecked;
 
@@ -114,7 +113,7 @@ public class CarController {
                 .parallel()
                 .map(unchecked(carService::uploadFile))
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cars);
     }

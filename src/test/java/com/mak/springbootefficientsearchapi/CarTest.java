@@ -125,7 +125,7 @@ class CarTest {
 
         assertTrue(carList.stream().allMatch(car -> car.getCountry().equals("Germany") && car.getType().equals("Sedan")));
 
-        List<LocalDate> actualCreatedDateList = carList.stream().map(Car::getCreateDate).collect(Collectors.toList());
+        List<LocalDate> actualCreatedDateList = carList.stream().map(Car::getCreateDate).toList();
         assertThat(actualCreatedDateList.toString()).hasToString("[2018-07-09, 2018-02-13, 2017-07-21, 2017-07-17, 2017-02-04]");
     }
 
