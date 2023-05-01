@@ -1,8 +1,12 @@
-name: SonarCloud
+name: Code Quality Check Main
+
 on:
+  # Runs on pushes targeting the default branch
   push:
     branches:
       - main
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
