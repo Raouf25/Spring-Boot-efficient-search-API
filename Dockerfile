@@ -1,17 +1,18 @@
 #
 # Build stage
 #
-FROM maven:3.6.0-jdk-11-slim AS MAVEN_BUILD
+FROM maven:3.8.7-eclipse-temurin-19 AS MAVEN_BUILD
 COPY pom.xml /build/
-COPY src /build/src/
+COPY . /build/
 WORKDIR /build/
-RUN mvn -f /build/pom.xml clean package
+#The option "--quiet" is used to limit the output to only warnings and errors
+RUN mvn -f /build/pom.xml clean package --quiet
 
 #
 # Package stage
 #
 # base image to build a JRE
-FROM amazoncorretto:17.0.3-alpine as corretto-jdk
+FROM amazoncorretto:19.0.2-alpine as corretto-jdk
 
 # required for strip-debug to work
 RUN apk add --no-cache binutils
