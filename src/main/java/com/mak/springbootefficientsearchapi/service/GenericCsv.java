@@ -56,7 +56,7 @@ public abstract class GenericCsv<T> {
                         .collect(Collectors.toMap(header::get, i -> lineValues[i])))
                 .peek(mapcar -> mapcar.remove("id"))
                 .map(unchecked(mapcar2 -> createCar(mapcar2, setMap)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private T createCar(Map<String, String> mapEntity, Map<String, Method> setMap) throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
@@ -128,7 +128,7 @@ public abstract class GenericCsv<T> {
                         && !"getClass".equals(method.getName())
                         && !noNeededColumn.contains(getColumnName(method)))
                 .sorted(Comparator.comparing(this::getColumnName))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String[] getHeader(List<Method> methods) {
