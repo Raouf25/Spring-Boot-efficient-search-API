@@ -114,7 +114,7 @@ public class CarController {
                 .parallel()
                 .map(unchecked(carService::uploadFile))
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cars);
     }

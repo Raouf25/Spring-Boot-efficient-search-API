@@ -15,10 +15,10 @@
     <description>Demo project for Spring Boot efficient search api</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
 
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
 
         <!-- SonarCloud -->
         <sonar.organization>raouf25-github</sonar.organization>
