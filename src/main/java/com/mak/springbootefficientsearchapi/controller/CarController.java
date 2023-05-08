@@ -14,6 +14,9 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -59,6 +62,7 @@ public class CarController {
     @Transactional
     @PatchMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @CachePut(value = "carSearchCache", key = "#id")
     public Car update(@PathVariable(name = "id") Integer id, @RequestBody Vehicle vehicle) {
         Car car = modelMapper.map(vehicle, Car.class);
         return carService.update(id, car);
@@ -67,6 +71,7 @@ public class CarController {
     @Transactional
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "carSearchCache", key = "#id")
     public void delete(@PathVariable(name = "id") Integer id) {
         carService.delete(id);
     }
@@ -74,6 +79,7 @@ public class CarController {
     @Transactional
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @Cacheable(value = "carSearchCache", key = "#id")
     public Car get(@PathVariable(name = "id") Integer id) {
         return carService.get(id);
     }
@@ -81,6 +87,7 @@ public class CarController {
     @Transactional
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @Cacheable(value = "carSearchCache", key = "{#root.methodName, #spec, #sort, #headers}")
     public ResponseEntity<List<Car>> get(
             @And({
                     @Spec(path = "manufacturer", params = "manufacturer", spec = Like.class),
