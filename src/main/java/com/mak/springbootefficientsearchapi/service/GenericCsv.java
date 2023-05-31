@@ -38,13 +38,17 @@ public abstract class GenericCsv<T> {
         return this.clazz;
     }
 
-
     public List<T> parseCsvFile(MultipartFile multipartFile) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), StandardCharsets.UTF_8));
-
-        List<String> header = Arrays.asList(bufferedReader.readLine().split(CELL_SEPARATOR));
+        List<String> header = parseHeader(bufferedReader.readLine());
         Map<String, Method> setMap = setterMethodsMap();
         return getList(bufferedReader, header, setMap);
+    }
+
+    private List<String> parseHeader(String headerLine) {
+        return Arrays.stream(headerLine.split(CELL_SEPARATOR))
+                .map(String::trim)
+                .toList();
     }
 
     private List<T> getList(BufferedReader bufferedReader, List<String> header, Map<String, Method> setMap) {
@@ -54,8 +58,8 @@ public abstract class GenericCsv<T> {
                 .map(lineValues -> IntStream.range(0, lineValues.length)
                         .boxed()
                         .collect(Collectors.toMap(header::get, i -> lineValues[i])))
-                .peek(mapcar -> mapcar.remove("id"))
-                .map(unchecked(mapcar2 -> createCar(mapcar2, setMap)))
+                .peek(mapCar -> mapCar.remove("id"))
+                .map(unchecked(mapCar -> createCar(mapCar, setMap)))
                 .toList();
     }
 
@@ -64,8 +68,10 @@ public abstract class GenericCsv<T> {
         for (Map.Entry<String, String> entry : mapEntity.entrySet()) {
             String k = entry.getKey();
             String v = entry.getValue();
-            Method method = setMap.get(k);
-            method.invoke(t, convert(method.getParameterTypes()[0], v));
+            if (!k.equals("id")) {
+                Method method = setMap.get(k);
+                method.invoke(t, convert(method.getParameterTypes()[0], v));
+            }
         }
         return t;
     }
@@ -89,40 +95,34 @@ public abstract class GenericCsv<T> {
         return StringUtils.uncapitalize(method.getName().substring(3));
     }
 
-
     public T instantiateObject(Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         return clazz.getDeclaredConstructor().newInstance();  // use reflection to create instance
     }
 
-
-    public Resource generateCsvFile(List<T> clazz) throws IOException {
-        List<String> noNeededColumn = new ArrayList<>();
-        noNeededColumn.add("id");
-        List<Method> methods = getMethodsList(clazz, noNeededColumn);
+    public Resource generateCsvFile(List<T> objects) throws IOException {
+        List<String> noNeededColumn = Collections.singletonList("id");
+        List<Method> methods = getMethodsList(objects.get(0), noNeededColumn);
         String[] extractHeader = getHeader(methods);
 
-        StringWriter st = new StringWriter();
-        try (ICsvMapWriter mapWriter = new CsvMapWriter(st, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
+        StringWriter stringWriter = new StringWriter();
+        try (ICsvMapWriter mapWriter = new CsvMapWriter(stringWriter, CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE)) {
             mapWriter.writeHeader(extractHeader);
-            for (final T car : clazz) {
-                Map<String, Object> mapPrices = buildMapLine(methods, car);
-                mapWriter.write(mapPrices, extractHeader, new CellProcessor[extractHeader.length]);
+            for (final T object : objects) {
+                Map<String, Object> mapLine = buildMapLine(methods, object);
+                mapWriter.write(mapLine, extractHeader, new CellProcessor[extractHeader.length]);
             }
         }
-        return (new InputStreamResource(new ByteArrayInputStream(st.toString().getBytes(StandardCharsets.UTF_8))));
+        return new InputStreamResource(new ByteArrayInputStream(stringWriter.toString().getBytes(StandardCharsets.UTF_8)));
     }
 
-
-    private Map<String, Object> buildMapLine(List<Method> methods, T line) {
+    private Map<String, Object> buildMapLine(List<Method> methods, T object) {
         return methods.stream()
                 .parallel()
-                .collect(Collectors.toMap(this::getColumnName,
-                        unchecked(method -> line.getClass().getMethod(method.getName()).invoke(line))));
+                .collect(Collectors.toMap(this::getColumnName, unchecked(method -> method.invoke(object))));
     }
 
-
-    private List<Method> getMethodsList(List<T> clazz, List<String> noNeededColumn) {
-        return Arrays.stream(clazz.get(0).getClass().getMethods())
+    private List<Method> getMethodsList(T object, List<String> noNeededColumn) {
+        return Arrays.stream(object.getClass().getMethods())
                 .parallel()
                 .filter(method -> method.getName().startsWith("get")
                         && !"getClass".equals(method.getName())

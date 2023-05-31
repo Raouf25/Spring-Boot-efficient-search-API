@@ -6,6 +6,7 @@ import com.mak.springbootefficientsearchapi.entity.utils.PagingResponse;
 import com.mak.springbootefficientsearchapi.repository.CarRepository;
 import com.mak.springbootefficientsearchapi.service.CarService;
 import com.mak.springbootefficientsearchapi.util.Builder;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,11 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.persistence.EntityNotFoundException;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,6 +32,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -229,18 +227,36 @@ class CarServiceTest {
     }
 
     @Test
-    void upload_csv_file_should_parse_csv_file() throws IOException {
+    void uploadFile_should_parse_csv_file_and_save_cars() throws IOException {
         // Given
-        MultipartFile multipartFile = new MockMultipartFile("car_file.csv", new FileInputStream(new File("src/test/resources/car_file.csv")));
-        List<Car> cars = new ArrayList<>();
-        ArgumentCaptor<List<Car>> carArgumentCaptor = ArgumentCaptor.forClass(cars.getClass());
+        // Prepare test data
+        String csvData = """
+                id;country;createDate;manufacturer;model;type
+                2;Japan;1964-04-10;Suzuki;Swift;Small
+                3;Japan;1960-11-04;Toyota;Camry;Midsize
+               """         ;
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file.csv",
+                "file.csv",
+                "text/csv",
+                csvData.getBytes()
+        );
+
+        List<Car> expectedCars = new ArrayList<>();
+        expectedCars.add(new Car(2,"Swift","Suzuki","Japan","Small",LocalDate.of(1964,04,10)));
+        expectedCars.add(new Car(3,"Swift","Camry","Japan","Midsize",LocalDate.of(1960,11,4)));
 
         // When
-        carService.uploadFile(multipartFile);
+        // Set up mock behavior
+        when(carRepository.saveAll(anyList())).thenReturn(expectedCars);
 
         // Then
-        verify(carRepository, times(1)).saveAll(carArgumentCaptor.capture());
-        assertThat(5, equalTo(carArgumentCaptor.getValue().size()));
+        // Call the method
+        List<Car> actualCars = carService.uploadFile(multipartFile);
+
+        // Verify the interactions and assertions
+        verify(carRepository, times(1)).saveAll(anyList());
+        assertEquals(expectedCars, actualCars);
     }
 
     @Test
