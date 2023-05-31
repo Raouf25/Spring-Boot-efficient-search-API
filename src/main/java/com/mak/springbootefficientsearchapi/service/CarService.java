@@ -4,6 +4,7 @@ import com.mak.springbootefficientsearchapi.entity.Car;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingHeaders;
 import com.mak.springbootefficientsearchapi.entity.utils.PagingResponse;
 import com.mak.springbootefficientsearchapi.repository.CarRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -130,7 +130,7 @@ public class CarService extends GenericCsv<Car> {
                 .map(carFound -> {
                     item.setId(id);
                     return save(item);
-                }).orElseThrow(()-> new EntityNotFoundException("Can not update entity, entity without ID."));
+                }).orElseThrow(() -> new EntityNotFoundException("Can not update entity, entity without ID."));
     }
 
     /**
