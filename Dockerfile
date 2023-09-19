@@ -5,27 +5,54 @@ FROM maven:3.8.7-eclipse-temurin-19 AS MAVEN_BUILD
 COPY pom.xml /build/
 COPY . /build/
 WORKDIR /build/
-#The option "--quiet" is used to limit the output to only warnings and errors
+#The option "--quiet" is used to limit the output to only warnings and errors (1)
 RUN mvn -f /build/pom.xml clean package --quiet
 
 #
 # Package stage
 #
 # base image to build a JRE
-FROM amazoncorretto:19.0.2-alpine as corretto-jdk
+FROM amazoncorretto:19.0.2-alpine AS deps
+
+# Identify dependencies (2)
+COPY --from=MAVEN_BUILD ./build/target/*-SNAPSHOT.jar /app/app.jar
+RUN mkdir /app/unpacked && \
+    cd /app/unpacked && \
+    unzip ../app.jar && \
+    cd .. && \
+    $JAVA_HOME/bin/jdeps \
+    --ignore-missing-deps \
+    --print-module-deps \
+    -q \
+    --recursive \
+    --multi-release 17 \
+    --class-path="./unpacked/BOOT-INF/lib/*" \
+    --module-path="./unpacked/BOOT-INF/lib/*" \
+    ./app.jar > /deps.info && \
+    rm -rf ./unpacked
+
+# base image to build a JRE
+FROM amazoncorretto:19.0.2-alpine AS corretto-jdk
 
 # required for strip-debug to work
 RUN apk add --no-cache binutils
 
-# Build small JRE image
+# copy module dependencies info
+COPY --from=deps /deps.info /deps.info
+
+# Build small JRE image (3)
 RUN $JAVA_HOME/bin/jlink \
          --verbose \
-         --add-modules ALL-MODULE-PATH \
+         --add-modules $(cat /deps.info) \
          --strip-debug \
          --no-man-pages \
          --no-header-files \
          --compress=2 \
          --output /customjre
+
+## run this command with this option to display dependencies
+##  docker build -t spring-boot-efficient-search-api-custom-5  .  --progress plain
+RUN file0="$(cat /deps.info)" && echo $file0
 
 # main app image
 FROM alpine:latest
