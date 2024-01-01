@@ -38,6 +38,32 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=Raouf25_Spring-Boot-efficient-search-API
 
+  docker:
+    # docker-repository:  https://hub.docker.com/r/raouf25/spring-boot-efficient-search-api
+    name: Build & push in Docker Hub
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            raouf25/spring-boot-efficient-search-api:1.0.0  
+            raouf25/spring-boot-efficient-search-api:latest
+
   deploy:
     environment:
       name: dev-environment

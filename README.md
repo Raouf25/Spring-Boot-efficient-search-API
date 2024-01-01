@@ -3,63 +3,58 @@
  
 Resource collections are often enormous, and when some data has to be retrieved from them, it would be only not very efficient to always get the full list and browse it for specific items. Therefore we should design an optimized Search API.
 
-A few of the essential features for consuming an API are:
-- **Filtering:** 
-to narrow down the query results by specific parameters, eg. creation date, or country
-```
-GET /api/cars?country=Japan
-GET /api/cars?createDate=2019–11–11
-```
+- **Filtering:**
+  - Narrow down query results by parameters (e.g., country, creation date).
+    ```bash
+    GET /api/cars?country=Japan
+    GET /api/cars?createDate=2019-11-11
+    ```
 
-- **Sorting:** 
-basically allows sorting the results ascending or descending by a chosen parameter or parameters, eg. by date
-```
-GET /api/cars?sort=createDate,asc
-GET /api/cars?sort=createDate,desc
-```
+- **Sorting:**
+  - Sort results ascending or descending by chosen parameters (e.g., by date).
+    ```bash
+    GET /api/cars?sort=createDate,asc
+    GET /api/cars?sort=createDate,desc
+    ```
 
-- **Paging:**  
-uses “size” to narrow down the number of results shown to a specific number and “offset” to specify which part of the results range to be shown 
-— this is important in cases where the number of total results is greater than the one presented, this works like pagination you may encounter on many websites
-Usually, these features are used by adding a so-called query parameter to the endpoint that is being called. 
-```
-GET /api/cars?limit=100
-GET /api/cars?offset=2
-```
+- **Paging:**
+  - Use "limit" to restrict results and "offset" to specify which part of the result range to show.
+    ```bash
+    GET /api/cars?limit=100
+    GET /api/cars?offset=2
+    ```
 
-All together:
-```
+Combine features:
+```bash
 GET /api/cars?country=Japan&sort=createDate,desc&limit=100&offset=2
 ```
-This query should result in the list of 100 cars from the Japan, sorted descending by the creation date, and the presented records are on the second page, which means they are from a 101–200 record number range.
+Results in the list of 100 cars from Japan, sorted by creation date in descending order, starting from the second page (records 101-200).
 
-### How to run the project
+### How to Run the Project
 
 ##### Clone source code from git
-```
-$  git clone https://github.com/Raouf25/Spring-Boot-efficient-search-API.git 
+```bash
+$ git clone https://github.com/Raouf25/Spring-Boot-efficient-search-API.git
 ```
 
 ##### Build Docker image
+```bash
+$ docker build -t="spring-boot-efficient-search-api" --force-rm=true .
 ```
-$  docker build -t="spring-boot-efficient-search-api" --force-rm=true .
-```
-This will first run maven build to create jar package and then build hello-world image using built jar package.
+This command runs Maven build to create a JAR package and builds the Docker image.
 
->Note: if you run this command for the first time, it will take some time to download the base image from [DockerHub](https://hub.docker.com/)
+*Note: Initial command may take time to download the base image from [DockerHub](https://hub.docker.com/)*
 
 ##### Run Docker Container
-```
+```bash
 $ docker run -p 8080:8080 -it --rm spring-boot-efficient-search-api
 ```
 
-##### Test application
-
+##### Test Application
+```bash
+$ curl localhost:8080/api/cars/1
 ```
-$  curl localhost:8080/api/cars/1
-```
-
-the response should be:
+Response:
 ```json
 {
    "id":1,
@@ -71,15 +66,20 @@ the response should be:
 }
 ```
 
-#####  Stop Docker Container:
-```
-docker stop `docker container ls | grep "spring-boot-efficient-search-api:*" | awk '{ print $1 }'`
+##### Stop Docker Container
+```bash
+docker stop $(docker container ls | grep "spring-boot-efficient-search-api:*" | awk '{ print $1 }')
 ```
 
 ## Live Demo
-This project is deployed in https://spring-boot-efficient-search-api.fly.dev/api/cars
+This project is deployed on https://spring-boot-efficient-search-api.fly.dev/api/cars
 
-Let's try: https://spring-boot-efficient-search-api.fly.dev/api/cars?country=Japan&sort=createDate,desc&limit=100&offset=2
+Try: [Demo Link](https://spring-boot-efficient-search-api.fly.dev/api/cars?country=Japan&sort=createDate,desc&limit=100&offset=2)
+
+## Docker Image Repository
+Docker Image: [raouf25/spring-boot-efficient-search-api](https://hub.docker.com/r/raouf25/spring-boot-efficient-search-api)
+
+Refer to the [Docker Commands](https://hub.docker.com/r/raouf25/spring-boot-efficient-search-api) section for pulling, running, and querying the API using cURL and jq.
 
 ## License
 For more details please see this **[medium post](https://medium.com/quick-code/spring-boot-how-to-design-efficient-search-rest-api-c3a678b693a0)** .
