@@ -56,7 +56,7 @@ public class CarControllerTest {
     @BeforeEach
     public void setup() {
         car = Builder.car(1, "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
-        vehicle = Builder.vehicle( "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
+        vehicle = new Vehicle( "WALLYS", "IRIS", "Small", "Tunisia", LocalDate.of(2006, 8, 29));
         mockMvc = MockMvcBuilders.standaloneSetup(carController).build();
     }
 
