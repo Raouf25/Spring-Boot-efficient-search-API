@@ -113,7 +113,6 @@ public class CarController {
         return headers;
     }
 
-    @ResponseBody
     @PostMapping(value = "/upload", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<List<Car>> uploadFile(@RequestParam(value = "files") List<MultipartFile> files) {
         List<Car> cars = files.stream()
