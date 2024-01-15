@@ -1,7 +1,8 @@
 #
 # Build stage
 #
-FROM maven:3.8.7-eclipse-temurin-19 AS MAVEN_BUILD
+# check: https://hub.docker.com/_/maven
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS MAVEN_BUILD
 COPY pom.xml /build/
 COPY . /build/
 WORKDIR /build/
@@ -12,7 +13,7 @@ RUN mvn -f /build/pom.xml clean package -DskipTests --quiet
 # Package stage
 #
 # base image to build a JRE
-FROM amazoncorretto:19.0.2-alpine AS deps
+FROM eclipse-temurin:21-alpine AS deps
 
 # Identify dependencies (2)
 COPY --from=MAVEN_BUILD ./build/target/*-SNAPSHOT.jar /app/app.jar
@@ -25,14 +26,14 @@ RUN mkdir /app/unpacked && \
     --print-module-deps \
     -q \
     --recursive \
-    --multi-release 17 \
+    --multi-release 21 \
     --class-path="./unpacked/BOOT-INF/lib/*" \
     --module-path="./unpacked/BOOT-INF/lib/*" \
     ./app.jar > /deps.info && \
     rm -rf ./unpacked
 
 # base image to build a JRE
-FROM amazoncorretto:19.0.2-alpine AS corretto-jdk
+FROM eclipse-temurin:21-alpine AS custome-jre-step
 
 # required for strip-debug to work
 RUN apk add --no-cache binutils
@@ -60,7 +61,7 @@ ENV JAVA_HOME=/jre
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # copy JRE from the base image
-COPY --from=corretto-jdk /customjre $JAVA_HOME
+COPY --from=custome-jre-step /customjre $JAVA_HOME
 
 # Add app user
 ARG APPLICATION_USER=appuser
