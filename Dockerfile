@@ -1,7 +1,7 @@
 #
 # Build stage
 #
-FROM maven:3.8.7-eclipse-temurin-19 AS MAVEN_BUILD
+FROM maven:3.8.7-eclipse-temurin-19 AS maven_build
 COPY pom.xml /build/
 COPY . /build/
 WORKDIR /build/
@@ -15,7 +15,7 @@ RUN mvn clean package -DskipTests --quiet
 FROM amazoncorretto:19.0.2-alpine AS deps
 
 # Identify dependencies (2)
-COPY --from=MAVEN_BUILD ./build/target/*-SNAPSHOT.jar /app/app.jar
+COPY --from=maven_build ./build/target/*-SNAPSHOT.jar /app/app.jar
 RUN mkdir /app/unpacked && \
     cd /app/unpacked && \
     unzip ../app.jar && \
@@ -74,10 +74,14 @@ RUN mkdir /app && \
 WORKDIR /app
 
 # Copy the built JAR file from the build stage
-COPY --chown=1000:1000  --from=MAVEN_BUILD /build/target/spring-boot-efficient-search-api-0.0.1-SNAPSHOT.jar  /app/app.jar
+COPY --chown=1000:1000  --from=maven_build /build/target/spring-boot-efficient-search-api-0.0.1-SNAPSHOT.jar  /app/app.jar
 
 # Expose port 8080
 EXPOSE 8080
 
 # Run the JAR file as the entrypoint
 ENTRYPOINT [ "/jre/bin/java", "-jar", "/app/app.jar" ]
+
+# docker build -t spring-boot-efficient-search-api-1  .
+# docker run -t -p 8080:8080  spring-boot-efficient-search-api-1
+# docker images --filter=reference='spring-boot-efficient-search-api*'
