@@ -2,9 +2,8 @@
 # Build stage
 #
 FROM maven:3.8.7-eclipse-temurin-19 AS maven_build
-COPY pom.xml /build/
-COPY . /build/
-WORKDIR /build/
+
+COPY . /.
 #The option "--quiet" is used to limit the output to only warnings and errors (1)
 RUN mvn clean package -DskipTests --quiet
 
@@ -14,22 +13,23 @@ RUN mvn clean package -DskipTests --quiet
 # base image to build a JRE
 FROM amazoncorretto:19.0.2-alpine AS deps
 
+COPY --from=maven_build ./target/*-SNAPSHOT.jar /app/app.jar
+WORKDIR /app
+
 # Identify dependencies (2)
-COPY --from=maven_build ./build/target/*-SNAPSHOT.jar /app/app.jar
-RUN mkdir /app/unpacked && \
-    cd /app/unpacked && \
-    unzip ../app.jar && \
-    cd .. && \
+# Unpack the JAR file and analyze dependencies
+RUN mkdir -p unpacked && \
+    unzip app.jar -d unpacked && \
     $JAVA_HOME/bin/jdeps \
     --ignore-missing-deps \
     --print-module-deps \
     -q \
     --recursive \
     --multi-release 17 \
-    --class-path="./unpacked/BOOT-INF/lib/*" \
-    --module-path="./unpacked/BOOT-INF/lib/*" \
-    ./app.jar > /deps.info && \
-    rm -rf ./unpacked
+    --class-path="unpacked/BOOT-INF/lib/*" \
+    --module-path="unpacked/BOOT-INF/lib/*" \
+    app.jar > /deps.info && \
+    rm -rf unpacked
 
 # base image to build a JRE
 FROM amazoncorretto:19.0.2-alpine AS corretto-jdk
@@ -74,7 +74,7 @@ RUN mkdir /app && \
 WORKDIR /app
 
 # Copy the built JAR file from the build stage
-COPY --chown=1000:1000  --from=maven_build /build/target/spring-boot-efficient-search-api-0.0.1-SNAPSHOT.jar  /app/app.jar
+COPY --chown=1000:1000  --from=maven_build /target/spring-boot-efficient-search-api-0.0.1-SNAPSHOT.jar  /app/app.jar
 
 # Expose port 8080
 EXPOSE 8080
@@ -85,3 +85,9 @@ ENTRYPOINT [ "/jre/bin/java", "-jar", "/app/app.jar" ]
 # docker build -t spring-boot-efficient-search-api-1  .
 # docker run -t -p 8080:8080  spring-boot-efficient-search-api-1
 # docker images --filter=reference='spring-boot-efficient-search-api*'
+
+
+#  spring-boot-efficient-search-api-1    Started SpringBootEfficientSearchApiApplication in 49.174 seconds (process running for 56.83)
+#  spring-boot-efficient-search-api-2    Started SpringBootEfficientSearchApiApplication in 48.951 seconds (process running for 56.401)
+#  spring-boot-efficient-search-api-3    Started SpringBootEfficientSearchApiApplication in 51.111 seconds (process running for 59.216)
+#  spring-boot-efficient-search-api-4    Started SpringBootEfficientSearchApiApplication in 50.456 seconds (process running for 57.038)
