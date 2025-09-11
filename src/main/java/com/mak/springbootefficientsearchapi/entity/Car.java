@@ -2,18 +2,11 @@ package com.mak.springbootefficientsearchapi.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 public class Car {
 
     @Id
@@ -41,4 +34,63 @@ public class Car {
     @Column(nullable = false)
     private LocalDate createDate;
 
+    public Car(Integer id, String manufacturer, String model, String type, String country, LocalDate createDate) {
+        this.id = id;
+        this.manufacturer = manufacturer;
+        this.model = model;
+        this.type = type;
+        this.country = country;
+        this.createDate = createDate;
+    }
+
+    public Car() {
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setCreateDate(LocalDate createDate) {
+        this.createDate = createDate;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public LocalDate getCreateDate() {
+        return createDate;
+    }
 }
