@@ -1,10 +1,6 @@
 package com.mak.springbootefficientsearchapi.entity.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 public enum PagingHeaders {
     PAGE_SIZE("Page-Size"),
     PAGE_NUMBER("Page-Number"),
@@ -13,4 +9,12 @@ public enum PagingHeaders {
     COUNT("Count");
 
     private final String name;
+
+    PagingHeaders(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
