@@ -1,0 +1,27 @@
+##
+## Build stage
+##
+#FROM maven:3.9.11-eclipse-temurin-24-alpine AS maven_build
+#COPY pom.xml /build/
+#COPY . /build/
+#WORKDIR /build/
+#RUN mvn -f /build/pom.xml clean package -DskipTests
+
+
+#
+# Package stage
+#
+FROM amazoncorretto:24-alpine
+ARG JAR_NAME=spring-boot-efficient-search-api
+ARG JAR_FILE=${JAR_NAME}.jar
+#COPY  --from=maven_build /build/target/${JAR_NAME}-0.0.1-SNAPSHOT.jar ${JAR_FILE}
+COPY ./target/${JAR_NAME}-0.0.1-SNAPSHOT.jar ${JAR_FILE}
+ENTRYPOINT ["java","-jar","spring-boot-efficient-search-api.jar"]
+
+
+# docker build -t spring-boot-efficient-search-api_1  . -f ./Dockerfile_1_default
+# docker run -d -p 8111:8080  spring-boot-efficient-search-api_1
+
+# docker images --filter=reference='spring-boot-efficient-search-api*' | sort
+
+#[+] Building 3.2s (8/8) FINISHED

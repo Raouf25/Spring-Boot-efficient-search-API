@@ -1,6 +1,6 @@
 # flyctl launch added from .gitignore
 **/HELP.md
-**/target
+#**/target
 !**/.mvn/wrapper/maven-wrapper.jar
 !**/**/src/main/**
 !**/**/src/test/**

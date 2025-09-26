@@ -1,0 +1,42 @@
+# Définir une variable globale pour le fichier JAR
+ARG JAR_FILE=spring-boot-efficient-search-api-*.jar
+
+##
+## Build stage
+##
+#FROM maven:3.9.11-eclipse-temurin-24-alpine AS maven_build
+#COPY . /.
+#RUN mvn clean package -DskipTests
+
+#
+# Perform the extraction in a separate builder container
+#
+FROM eclipse-temurin:24-alpine AS builder
+
+ARG JAR_FILE
+#COPY --from=maven_build ./target/${JAR_FILE} /app/app.jar
+COPY ./target/${JAR_FILE} /app/app.jar
+# Extract the jar file using an efficient layout
+RUN java -Djarmode=layertools -jar /app/app.jar extract
+
+
+# This is the runtime container
+FROM bellsoft/liberica-openjre-debian:24-cds
+WORKDIR /application
+# Copy the extracted jar contents from the builder container into the working directory in the runtime container
+# Every copy step creates a new docker layer
+# This allows docker to only pull the changes it really needs
+COPY --from=builder /dependencies/ ./
+COPY --from=builder /spring-boot-loader/ ./
+COPY --from=builder /snapshot-dependencies/ ./
+COPY --from=builder /application/ ./
+
+# Define the entrypoint to run the application
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+
+# docker build -t spring-boot-efficient-search-api_2  . -f ./Dockerfile_2_with_layer
+# docker run -d -p 8222:8080  spring-boot-efficient-search-api_2
+
+# docker images --filter=reference='spring-boot-efficient-search-api*' | sort
+
+#[+] Building 1.4s (17/17) FINISHED
