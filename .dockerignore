@@ -1,6 +1,7 @@
 # flyctl launch added from .gitignore
 **/HELP.md
-#**/target
+**/target/*
+!**/target/spring-boot-efficient-search-api-0.0.1-SNAPSHOT.jar
 !**/.mvn/wrapper/maven-wrapper.jar
 !**/**/src/main/**
 !**/**/src/test/**
