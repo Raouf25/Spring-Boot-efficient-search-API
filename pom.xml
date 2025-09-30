@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
-            <version>3.2.4</version>
+            <version>3.2.5</version>
             <scope>compile</scope>
         </dependency>
 
