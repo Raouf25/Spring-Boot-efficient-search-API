@@ -21,7 +21,7 @@ RUN java -Djarmode=layertools -jar /app/app.jar extract
 
 
 # This is the runtime container
-FROM bellsoft/liberica-openjre-debian:24-cds
+FROM eclipse-temurin:24-alpine
 WORKDIR /application
 # Copy the extracted jar contents from the builder container into the working directory in the runtime container
 # Every copy step creates a new docker layer
