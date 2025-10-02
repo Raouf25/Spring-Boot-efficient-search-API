@@ -98,16 +98,19 @@ fi
 echo "---"
 echo "🎉 Script finished. The Trivy binary and HTML template are ready."
 echo "Template path for the command: $TEMPLATE_PATH"
-echo "Example command to generate an HTML report:"
-echo "trivy image --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_alpine.html alpine:latest"
+echo "📊 Example command to generate an HTML report:"
 
+echo "trivy image -q --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_1_default.html spring-boot-efficient-search-api_1_default:latest"
+trivy image -q --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_1_default.html spring-boot-efficient-search-api_1_default:latest
 
-trivy image --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_1_default.html spring-boot-efficient-search-api_1_default:latest
+echo "trivy image -q --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_2_with_layer.html spring-boot-efficient-search-api_2_with_layer:latest"
+trivy image -q --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_2_with_layer.html spring-boot-efficient-search-api_2_with_layer:latest
 
-trivy image --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_2_with_layer.html spring-boot-efficient-search-api_2_with_layer:latest
+echo "trivy image -q --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_3_distroless.html spring-boot-efficient-search-api_3_distroless:latest"
+trivy image -q --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_3_distroless.html spring-boot-efficient-search-api_3_distroless:latest
 
-trivy image --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_3_distroless.html spring-boot-efficient-search-api_3_distroless:latest
+echo "trivy image -q --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_4_custom_jre.html spring-boot-efficient-search-api_4_custom_jre:latest"
+trivy image -q --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_4_custom_jre.html spring-boot-efficient-search-api_4_custom_jre:latest
 
-trivy image --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_4_custom_jre.html spring-boot-efficient-search-api_4_custom_jre:latest
-
-trivy image --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_5_custom_jre_with_layer.html  spring-boot-efficient-search-api_5_custom_jre_with_layer:latest
+echo "trivy image -q --format template --template \"@$TEMPLATE_PATH\" -o $REPORT_DIR/trivy_report_5_custom_jre_with_layer.html  spring-boot-efficient-search-api_5_custom_jre_with_layer:latest"
+trivy image -q --format template --template "@$TEMPLATE_PATH" -o $REPORT_DIR/trivy_report_5_custom_jre_with_layer.html  spring-boot-efficient-search-api_5_custom_jre_with_layer:latest
