@@ -11,3 +11,24 @@ updates:
     schedule:
       interval: "daily"
       time: "15:00"
+    target-branch: 'master'
+    commit-message:
+      prefix: 'chore(deps-maven): '
+
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      time: "16:00"
+    target-branch: 'master'
+    commit-message:
+      prefix: 'chore(deps-docker): '
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+      time: "17:00"
+    target-branch: 'master'
+    commit-message:
+      prefix: 'chore(deps-gh-actions): '
