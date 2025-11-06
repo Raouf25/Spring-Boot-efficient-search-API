@@ -11,7 +11,7 @@
 #
 # Package stage
 #
-FROM amazoncorretto:24-alpine
+FROM amazoncorretto:25-alpine
 ARG JAR_NAME=spring-boot-efficient-search-api
 ARG JAR_FILE=${JAR_NAME}.jar
 #COPY  --from=maven_build /build/target/${JAR_NAME}-0.0.1-SNAPSHOT.jar ${JAR_FILE}
