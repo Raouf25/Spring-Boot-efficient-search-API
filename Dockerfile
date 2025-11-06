@@ -4,7 +4,7 @@ ARG JAR_FILE=spring-boot-efficient-search-api-*.jar
 #
 # Build stage
 #
-FROM maven:3.9.11-eclipse-temurin-24-alpine AS maven_build
+FROM maven:3-eclipse-temurin-25-alpine AS maven_build
 
 COPY . /.
 
