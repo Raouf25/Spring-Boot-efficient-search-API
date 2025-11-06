@@ -14,7 +14,7 @@ RUN mvn clean package -DskipTests
 #
 # Step 1: Build a custom JRE
 #
-FROM eclipse-temurin:24-alpine AS build-jre
+FROM eclipse-temurin:25-alpine AS build-jre
 
 # Copy the application JAR file
 # Rendre la variable ARG disponible dans ce stage

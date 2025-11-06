@@ -11,7 +11,7 @@ ARG JAR_FILE=spring-boot-efficient-search-api-*.jar
 #
 # Perform the extraction in a separate builder container
 #
-FROM eclipse-temurin:24-alpine AS builder
+FROM eclipse-temurin:25-alpine AS builder
 
 ARG JAR_FILE
 #COPY --from=maven_build ./target/${JAR_FILE} /app/app.jar
@@ -21,7 +21,7 @@ RUN java -Djarmode=layertools -jar /app/app.jar extract
 
 
 # This is the runtime container
-FROM eclipse-temurin:24-alpine
+FROM eclipse-temurin:25-alpine
 WORKDIR /application
 # Copy the extracted jar contents from the builder container into the working directory in the runtime container
 # Every copy step creates a new docker layer
