@@ -51,7 +51,7 @@
         <dependency>
             <groupId>net.kaczmarzyk</groupId>
             <artifactId>specification-arg-resolver</artifactId>
-            <version>3.2.2</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
