@@ -1,0 +1,315 @@
+ARG BASE_IMAGE=eclipse-temurin:25-alpine
+
+############
+## BUILDER ##
+############
+FROM ${BASE_IMAGE} AS builder
+WORKDIR /builder
+
+ENV APP_NAME=spring-boot-efficient-search-api
+ENV JAR_DIR=/tmp/jar/
+
+ADD target/dd-java-agent.jar  dd-java-agent.jar
+# copy the app bundle
+COPY target/${APP_NAME}*.jar ${JAR_DIR}
+RUN file="$(ls -1 ${JAR_DIR}/${APP_NAME}*.jar | grep -v sources)" && mv ${file} ${APP_NAME}.jar
+
+RUN rm -rf ${JAR_DIR}
+
+
+RUN java -Djarmode=tools -jar ${APP_NAME}.jar extract --layers --launcher --destination extracted
+
+# Install required tools for jlink
+RUN apk add --no-cache binutils
+
+# Unpack the JAR, analyze dependencies, and build a minimal JRE
+RUN mkdir -p unpacked && \
+    ls -la /builder && \
+    unzip ${APP_NAME}.jar -d unpacked && \
+    $JAVA_HOME/bin/jdeps \
+    --ignore-missing-deps \
+    --print-module-deps \
+    -q \
+    --recursive \
+    --multi-release 25 \
+    --class-path="unpacked/BOOT-INF/lib/*" \
+    --module-path="unpacked/BOOT-INF/lib/*" \
+    ${APP_NAME}.jar > /dependencies.info && \
+    rm -rf unpacked && \
+    $JAVA_HOME/bin/jlink \
+         --verbose \
+         --add-modules $(cat /dependencies.info) \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=zip-6 \
+         --output /customjre
+
+############
+## RUNTIME ##
+############
+
+FROM alpine:3
+
+# Set environment variables for the JRE
+ENV JAVA_HOME=/jre
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Copy the custom JRE from the previous stage
+COPY --from=builder /customjre $JAVA_HOME
+
+LABEL org.opencontainers.image.title='[VC4I] Eyes Visibility - Equipments API'
+LABEL org.opencontainers.image.description='API to serve aggregated Transport Dates'
+LABEL org.opencontainers.image.authors='CE-TRANSPORT'
+LABEL org.opencontainers.image.url='https://wiki.decathlon.net/display/SUP/EYES'
+LABEL org.opencontainers.image.documentation='https://wiki.decathlon.net/display/SUP/EYES'
+LABEL org.opencontainers.image.source='https://github.com/dktunited/eyes-visibility'
+LABEL org.opencontainers.image.vendor='DECATHLON'
+LABEL org.opencontainers.image.licenses='Internal'
+
+ENV WORK_DIR=/usr/app
+ENV E_USER=eyes
+ENV E_GROUP=eyes
+ENV DATADOG_AGENT=${WORK_DIR}/dd-java-agent.jar
+
+WORKDIR $WORK_DIR
+
+EXPOSE 8080
+
+USER root
+
+RUN apk update
+RUN apk upgrade
+RUN apk add openssl openssl-dev
+RUN apk add bash
+RUN apk add sudo
+
+RUN addgroup -g 10000 ${E_GROUP}
+RUN adduser -G ${E_GROUP} -u 10000 ${E_USER} --disabled-password
+
+RUN chown -R ${E_USER}:${E_GROUP} $WORK_DIR
+RUN chown -R ${E_USER}:${E_GROUP} ${JAVA_HOME}
+RUN echo "eyes ALL=(ALL) NOPASSWD: /opt/openjdk/bin/keytool" >> /etc/sudoers
+
+USER ${E_USER}
+
+COPY --chown=${E_USER}:${E_GROUP}  --from=builder /builder/extracted/dependencies/ ./
+COPY --chown=${E_USER}:${E_GROUP}  --from=builder /builder/extracted/spring-boot-loader/ ./
+COPY --chown=${E_USER}:${E_GROUP}  --from=builder /builder/extracted/snapshot-dependencies/ ./
+COPY --chown=${E_USER}:${E_GROUP}  --from=builder /builder/extracted/application/ ./
+COPY --chown=${E_USER}:${E_GROUP}  --from=builder /builder/dd-java-agent.jar ./
+
+## JAVA_OPTS and LOG_LEVEL value are set in the kubernetes deployment file since they have different values for PROD environment and NON-PROD ones.
+ENTRYPOINT java ${JAVA_OPTS} \
+  -javaagent:${DATADOG_AGENT} \
+  -Djava.security.egd=file:/dev/urandom \
+  -DLOG_LEVEL=${LOG_LEVEL}\
+  "org.springframework.boot.loader.launch.JarLauncher"
+
+
+
+
+
+
+
+#
+#
+#  ARG BASE_IMAGE=eclipse-temurin:25-alpine
+#
+#  # BUILD STAGE
+#  FROM ${BASE_IMAGE} AS builder
+#
+#  WORKDIR /builder
+#
+#  # env variables
+#  ENV APP_NAME=mastership-api-partners
+#  # copy the app bundle
+#  COPY target/$APP_NAME*.jar $APP_NAME.jar
+#  # copying datadog agent
+#  COPY target/dd-java-agent.jar dd-java-agent.jar
+#  # copying entrypoint scripts
+#  COPY docker/proxychains.conf proxy/proxychains.conf
+#  COPY docker/entrypoint.sh scripts/entrypoint.sh
+#
+#  # extract layers
+#  RUN java -Djarmode=tools -jar ${APP_NAME}.jar extract --layers --launcher --destination extracted
+#
+#  # Install required tools for jlink
+#  RUN apk add --no-cache binutils
+#
+#  # Unpack the JAR, analyze dependencies, and build a minimal JRE
+#  RUN mkdir -p unpacked && \
+#      unzip $APP_NAME.jar -d unpacked && \
+#      $JAVA_HOME/bin/jdeps \
+#      --ignore-missing-deps \
+#      --print-module-deps \
+#      -q \
+#      --recursive \
+#      --multi-release 25 \
+#      --class-path="unpacked/BOOT-INF/lib/*" \
+#      --module-path="unpacked/BOOT-INF/lib/*" \
+#      $APP_NAME.jar > /dependencies.info && \
+#      rm -rf unpacked && \
+#      $JAVA_HOME/bin/jlink \
+#           --verbose \
+#           --add-modules $(cat /dependencies.info) \
+#           --strip-debug \
+#           --no-man-pages \
+#           --no-header-files \
+#           --compress=zip-6 \
+#           --output /customjre
+#
+#  # RUNTIME STAGE
+#  FROM alpine:3
+#
+#  LABEL org.opencontainers.image.title='[VC4I] Shipment Transport Mastership - Partners API'
+#  LABEL org.opencontainers.image.description='Manage Decathlon’s shipment data with a defined standard format, receiving and exposing those data to internal and external partners.'
+#  LABEL org.opencontainers.image.authors='CE-MASTERSHIP'
+#  LABEL org.opencontainers.image.url='https://wiki.decathlon.net/display/VALUECHAIN/MasterShip'
+#  LABEL org.opencontainers.image.documentation='https://wiki.decathlon.net/display/VALUECHAIN/MasterShip+%3E+API+%3E+MasterShip+Partners'
+#  LABEL org.opencontainers.image.source='https://github.com/dktunited/shipment-transport-mastership/tree/develop/apis/mastership-api-partners'
+#  LABEL org.opencontainers.image.vendor='DECATHLON'
+#  LABEL org.opencontainers.image.licenses='Internal'
+#
+#  # env variables
+#  ENV JAVA_HOME=/jre
+#  ENV PATH="${JAVA_HOME}/bin:${PATH}"
+#  ENV WORK_DIR=/usr/app
+#  ENV DATADOG_AGENT=dd-java-agent.jar
+#  ENV LOG_LEVEL=WARN
+#  ENV PROXY_CHAIN_CONF_DESTINATION=/etc/proxychains/proxychains.conf
+#  ENV ENTRYPOINT_SH=scripts/entrypoint.sh
+#  ENV PROXY_ENABLED=''
+#
+#  WORKDIR $WORK_DIR
+#
+#  # Copy the custom JRE from the previous stage
+#  COPY --from=builder /customjre $JAVA_HOME
+#
+#  # Update os
+#  RUN apk update && apk upgrade
+#  # Installing needed packges for ssl and bash so we can run SSH
+#  # Intalling bash as well, beacause we need it to run sh files
+#  RUN apk add proxychains-ng openssl bash
+#  # Use a custom user to run the web app. Do not use the root, it's not a good practice.
+#  RUN addgroup -g 10000 spring
+#  RUN adduser -G spring -u 10000 spring --disabled-password
+#  # switch to spring user
+#  USER spring
+#  # Expose the 8080 port so the app can handle external connections
+#  EXPOSE 8080
+#  # Use the layers mecanism, this will prevent the download of the project depedencies each time we build a new image
+#  COPY --chown=spring:spring --from=builder /builder/extracted/dependencies/ ./
+#  COPY --chown=spring:spring --from=builder /builder/extracted/spring-boot-loader/ ./
+#  COPY --chown=spring:spring --from=builder /builder/extracted/snapshot-dependencies/ ./
+#  COPY --chown=spring:spring --from=builder /builder/extracted/application/ ./
+#  COPY --chown=spring:spring --from=builder /builder/$DATADOG_AGENT ./
+#  COPY --chown=spring:spring --from=builder /builder/scripts/ ./scripts
+#
+#  COPY --from=builder /builder/proxy/proxychains.conf $PROXY_CHAIN_CONF_DESTINATION
+#
+#  # run the spring loader as a simple java main class
+#  ENTRYPOINT /bin/bash $ENTRYPOINT_SH
+#  # references : https://www.baeldung.com/spring-boot-docker-images , https://spring.io/blog/2020/08/14/creating-efficient-docker-images-with-spring-boot-2-3
+
+
+
+#########################
+#
+#ARG BASE_IMAGE=eclipse-temurin:25-alpine
+#
+## BUILD STAGE
+#FROM ${BASE_IMAGE} AS builder
+#
+#WORKDIR /builder
+#
+## env variables
+#ENV APP_NAME=mastership-api-partners
+## copy the app bundle
+#COPY target/$APP_NAME*.jar $APP_NAME.jar
+## copying datadog agent
+#COPY target/dd-java-agent.jar dd-java-agent.jar
+## copying entrypoint scripts
+#COPY docker/proxychains.conf proxy/proxychains.conf
+#COPY docker/entrypoint.sh scripts/entrypoint.sh
+#
+## extract layers
+#RUN java -Djarmode=tools -jar ${APP_NAME}.jar extract --layers --launcher --destination extracted
+#
+## Install required tools for jlink
+#RUN apk add --no-cache binutils
+#
+## Unpack the JAR, analyze dependencies, and build a minimal JRE
+#RUN mkdir -p unpacked && \
+#    unzip $APP_NAME.jar -d unpacked && \
+#    $JAVA_HOME/bin/jdeps \
+#    --ignore-missing-deps \
+#    --print-module-deps \
+#    -q \
+#    --recursive \
+#    --multi-release 25 \
+#    --class-path="unpacked/BOOT-INF/lib/*" \
+#    --module-path="unpacked/BOOT-INF/lib/*" \
+#    $APP_NAME.jar > /dependencies.info && \
+#    rm -rf unpacked && \
+#    $JAVA_HOME/bin/jlink \
+#         --verbose \
+#         --add-modules $(cat /dependencies.info) \
+#         --strip-debug \
+#         --no-man-pages \
+#         --no-header-files \
+#         --compress=zip-6 \
+#         --output /customjre
+#
+## RUNTIME STAGE
+#FROM alpine:3
+#
+#LABEL org.opencontainers.image.title='[VC4I] Shipment Transport Mastership - Partners API'
+#LABEL org.opencontainers.image.description='Manage Decathlon’s shipment data with a defined standard format, receiving and exposing those data to internal and external partners.'
+#LABEL org.opencontainers.image.authors='CE-MASTERSHIP'
+#LABEL org.opencontainers.image.url='https://wiki.decathlon.net/display/VALUECHAIN/MasterShip'
+#LABEL org.opencontainers.image.documentation='https://wiki.decathlon.net/display/VALUECHAIN/MasterShip+%3E+API+%3E+MasterShip+Partners'
+#LABEL org.opencontainers.image.source='https://github.com/dktunited/shipment-transport-mastership/tree/develop/apis/mastership-api-partners'
+#LABEL org.opencontainers.image.vendor='DECATHLON'
+#LABEL org.opencontainers.image.licenses='Internal'
+#
+## env variables
+#ENV JAVA_HOME=/jre
+#ENV PATH="${JAVA_HOME}/bin:${PATH}"
+#ENV WORK_DIR=/usr/app
+#ENV DATADOG_AGENT=dd-java-agent.jar
+#ENV LOG_LEVEL=WARN
+#ENV PROXY_CHAIN_CONF_DESTINATION=/etc/proxychains/proxychains.conf
+#ENV ENTRYPOINT_SH=scripts/entrypoint.sh
+#ENV PROXY_ENABLED=''
+#
+#WORKDIR $WORK_DIR
+#
+## Copy the custom JRE from the previous stage
+#COPY --from=builder /customjre $JAVA_HOME
+#
+## Update os
+#RUN apk update && apk upgrade
+## Installing needed packges for ssl and bash so we can run SSH
+## Intalling bash as well, beacause we need it to run sh files
+#RUN apk add proxychains-ng openssl bash
+## Use a custom user to run the web app. Do not use the root, it's not a good practice.
+#RUN addgroup -g 10000 spring
+#RUN adduser -G spring -u 10000 spring --disabled-password
+## switch to spring user
+#USER spring
+## Expose the 8080 port so the app can handle external connections
+#EXPOSE 8080
+## Use the layers mecanism, this will prevent the download of the project depedencies each time we build a new image
+#COPY --chown=spring:spring --from=builder /builder/extracted/dependencies/ ./
+#COPY --chown=spring:spring --from=builder /builder/extracted/spring-boot-loader/ ./
+#COPY --chown=spring:spring --from=builder /builder/extracted/snapshot-dependencies/ ./
+#COPY --chown=spring:spring --from=builder /builder/extracted/application/ ./
+#COPY --chown=spring:spring --from=builder /builder/$DATADOG_AGENT ./
+#COPY --chown=spring:spring --from=builder /builder/scripts/ ./scripts
+#
+#COPY --from=builder /builder/proxy/proxychains.conf $PROXY_CHAIN_CONF_DESTINATION
+#
+## run the spring loader as a simple java main class
+#ENTRYPOINT /bin/bash $ENTRYPOINT_SH
+## references : https://www.baeldung.com/spring-boot-docker-images , https://spring.io/blog/2020/08/14/creating-efficient-docker-images-with-spring-boot-2-3

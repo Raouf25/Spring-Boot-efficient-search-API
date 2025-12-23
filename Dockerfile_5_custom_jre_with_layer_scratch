@@ -1,0 +1,100 @@
+# Définir une variable globale pour le fichier JAR
+ARG JAR_FILE=spring-boot-efficient-search-api-*.jar
+
+##
+## Build stage
+##
+FROM eclipse-temurin:25-alpine AS builder
+
+ARG JAR_FILE
+COPY ./target/${JAR_FILE} /app/app.jar
+# extract layers
+RUN java -Djarmode=layertools -jar /app/app.jar extract
+
+# Copier jdeps et jlink vers un chemin accessible pour l'étape suivante
+RUN cp $JAVA_HOME/bin/jdeps /usr/bin/jdeps
+RUN cp $JAVA_HOME/bin/jlink /usr/bin/jlink
+##########################
+#
+# Step 1: Build a custom JRE
+#
+FROM eclipse-temurin:25-alpine AS build-jre
+COPY --from=builder /usr/bin/jdeps /usr/bin/jdeps
+COPY --from=builder /usr/bin/jlink /usr/bin/jlink
+# Copy the application JAR file
+# Rendre la variable ARG disponible dans ce stage
+ARG JAR_FILE
+COPY ./target/${JAR_FILE} /app/app.jar
+WORKDIR /app
+
+# Install required tools for jlink
+###_RUN apk add --no-cache binutils
+#RUN apk add --no-cache bash zlib
+
+# Unpack the JAR, analyze dependencies, and build a minimal JRE
+#RUN mkdir -p unpacked && \
+#    unzip app.jar -d unpacked && \
+RUN jar xf app.jar -C unpacked && \
+    $JAVA_HOME/bin/jdeps \
+    --ignore-missing-deps \
+    --print-module-deps \
+    -q \
+    --recursive \
+    --multi-release 24 \
+#    --class-path="unpacked/BOOT-INF/lib/*" \
+#    --module-path="unpacked/BOOT-INF/lib/*" \
+    --class-path="BOOT-INF/lib/*" \
+    --module-path="BOOT-INF/lib/*" \
+    app.jar > /dependencies.info && \
+    rm -rf unpacked && \
+    $JAVA_HOME/bin/jlink \
+         --verbose \
+         --add-modules $(cat /dependencies.info) \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=zip-6 \
+         --output /customjre
+
+#RUN file0="$(cat /dependencies.info)" && echo $file0
+
+##########################
+#
+# Step 2: Build the main application image
+#
+FROM scratch  AS final
+
+COPY --from=builder /tmp /tmp
+COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
+COPY --from=builder /lib/libc.musl-x86_64.so.1 /lib/
+
+# Set environment variables for the JRE
+ENV JAVA_HOME=/jre
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Copy the custom JRE from the previous stage
+COPY --from=build-jre /customjre $JAVA_HOME
+
+# Add a non-root user for the application
+ARG APPLICATION_USER=appuser
+##RUN adduser --no-create-home -u 1000 -D $APPLICATION_USER
+
+# Configure the working directory
+##RUN mkdir /app && chown -R $APPLICATION_USER /app
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application JAR file
+#ARG JAR_FILE
+#COPY --chown=1000:1000 --from=maven_build ./target/${JAR_FILE} /app/app.jar
+# Expose the application port
+EXPOSE 8080
+# Use the layers mecanism, this will prevent the download of the project depedencies each time we build a new image
+COPY --from=builder dependencies/ ./
+COPY --from=builder spring-boot-loader/ ./
+COPY --from=builder snapshot-dependencies/ ./
+COPY --from=builder application/ ./
+
+# Define the entrypoint to run the application
+ENTRYPOINT ["java", "-XX:-UseCompactObjectHeaders", "org.springframework.boot.loader.launch.JarLauncher"]
