@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,28 +28,28 @@ import static org.springframework.util.Assert.notNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 class CarTest {
 
     private ResultActions result;
 
-    @Autowired
     protected MockMvc webClient;
 
     @Autowired
     protected WebApplicationContext context;
 
-    @Autowired
     protected ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
-        notNull(webClient, "MockMVC can not be null");
+        notNull(context, "WebApplicationContext can not be null");
 
         webClient = MockMvcBuilders
                 .webAppContextSetup(context)
                 //     .apply(springSecurity()) // enable security for the mock set up
                 .build();
+        
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
     }
 
     @Test

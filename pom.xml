@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.8</version>
+        <version>4.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.mak</groupId>
@@ -76,6 +76,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test-autoconfigure</artifactId>
             <scope>test</scope>
         </dependency>
 

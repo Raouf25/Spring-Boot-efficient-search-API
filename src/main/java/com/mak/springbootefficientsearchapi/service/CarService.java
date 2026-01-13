@@ -73,7 +73,7 @@ public class CarService extends GenericCsv<Car> {
     }
 
     private boolean isRequestPaged(HttpHeaders headers) {
-        return headers.containsKey(PagingHeaders.PAGE_NUMBER.getName()) && headers.containsKey(PagingHeaders.PAGE_SIZE.getName());
+        return headers.get(PagingHeaders.PAGE_NUMBER.getName()) != null && headers.get(PagingHeaders.PAGE_SIZE.getName()) != null;
     }
 
     private Pageable buildPageRequest(HttpHeaders headers, Sort sort) {
