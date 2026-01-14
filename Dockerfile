@@ -1,14 +1,23 @@
-# Définir une variable globale pour le fichier JAR
+# Define global variable for the JAR file
 ARG JAR_FILE=spring-boot-efficient-search-api-*.jar
+ARG MAVEN_VERSION=3
 
 #
 # Build stage
 #
-FROM maven:3-eclipse-temurin-25-alpine AS maven_build
+FROM maven:${MAVEN_VERSION}-eclipse-temurin-25-alpine AS maven_build
 
-COPY . /.
+WORKDIR /build
 
-RUN mvn clean package -DskipTests
+# Copy pom.xml and source code
+COPY pom.xml .
+COPY src ./src
+
+# Cache dependencies layer
+RUN mvn dependency:go-offline -B
+
+# Build application
+RUN mvn clean package -DskipTests -q
 
 ##########################
 #
@@ -16,38 +25,37 @@ RUN mvn clean package -DskipTests
 #
 FROM eclipse-temurin:25-alpine AS build-jre
 
-# Copy the application JAR file
-# Rendre la variable ARG disponible dans ce stage
-ARG JAR_FILE
-COPY --from=maven_build ./target/${JAR_FILE} /app/app.jar
 WORKDIR /app
 
+# Copy the application JAR file
+# Make the ARG variable available in this stage
+ARG JAR_FILE
+COPY --from=maven_build /build/target/${JAR_FILE} /app/app.jar
+
 # Install required tools for jlink
-RUN apk add --no-cache binutils
+RUN apk add --no-cache binutils unzip
 
 # Unpack the JAR, analyze dependencies, and build a minimal JRE
 RUN mkdir -p unpacked && \
-    unzip app.jar -d unpacked && \
+    unzip -q app.jar -d unpacked && \
     $JAVA_HOME/bin/jdeps \
     --ignore-missing-deps \
     --print-module-deps \
     -q \
     --recursive \
-    --multi-release 24 \
+    --multi-release 25 \
     --class-path="unpacked/BOOT-INF/lib/*" \
     --module-path="unpacked/BOOT-INF/lib/*" \
     app.jar > /dependencies.info && \
     rm -rf unpacked && \
     $JAVA_HOME/bin/jlink \
-         --verbose \
          --add-modules $(cat /dependencies.info) \
          --strip-debug \
          --no-man-pages \
          --no-header-files \
          --compress=zip-6 \
-         --output /customjre
-
-RUN file0="$(cat /dependencies.info)" && echo $file0
+         --output /customjre && \
+    cat /dependencies.info
 
 ##########################
 #
@@ -55,30 +63,50 @@ RUN file0="$(cat /dependencies.info)" && echo $file0
 #
 FROM alpine:latest
 
+# Set labels for metadata
+LABEL maintainer="Raouf"
+LABEL description="Spring Boot Efficient Search API"
+LABEL version="1.0"
+
 # Set environment variables for the JRE
-ENV JAVA_HOME=/jre
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV JAVA_HOME=/jre \
+    PATH="${JAVA_HOME}/bin:${PATH}" \
+    LANG=C.UTF-8 \
+    TZ=UTC
 
 # Copy the custom JRE from the previous stage
 COPY --from=build-jre /customjre $JAVA_HOME
 
-# Add a non-root user for the application
+# Create a non-root user for security
 ARG APPLICATION_USER=appuser
-RUN adduser --no-create-home -u 1000 -D $APPLICATION_USER
+ARG APPLICATION_UID=1000
+RUN adduser --no-create-home -u ${APPLICATION_UID} -D ${APPLICATION_USER}
 
-# Configure the working directory
-RUN mkdir /app && chown -R $APPLICATION_USER /app
+# Create application directory
+RUN mkdir -p /app && \
+    chown -R ${APPLICATION_USER}:${APPLICATION_USER} /app
 
 # Set the working directory
 WORKDIR /app
 
+# Switch to non-root user
+USER ${APPLICATION_USER}
+
 # Copy the application JAR file
 ARG JAR_FILE
-COPY --chown=1000:1000 --from=maven_build ./target/${JAR_FILE} /app/app.jar
+COPY --chown=${APPLICATION_UID}:${APPLICATION_UID} --from=maven_build /build/target/${JAR_FILE} /app/app.jar
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD java -cp /app/app.jar org.springframework.boot.loader.JarLauncher 2>/dev/null || exit 1
+
 # Expose the application port
 EXPOSE 8080
 
-# Define the entrypoint to run the application
+# Define JVM options for optimization
+ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC"
+
+# Run the application
 ENTRYPOINT [ "java", "-jar", "/app/app.jar" ]
 
 
