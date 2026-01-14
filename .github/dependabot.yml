@@ -5,30 +5,47 @@
 
 version: 2
 updates:
-  - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/" # Location of package manifests
-    # Check the maven registry for updates at 3pm UTC
+  - package-ecosystem: "maven"
+    directory: "/"
     schedule:
       interval: "daily"
       time: "15:00"
+      timezone: "UTC"
     target-branch: 'main'
     commit-message:
       prefix: 'chore(deps-maven): '
+      prefix-development: 'chore(deps-dev): '
+      include: "scope"
+    pull-request-branch-name:
+      separator: "/"
+    rebase-strategy: "auto"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      # Ignore major Java version updates - handle manually
+      - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: 'docker'
     directory: '/'
     schedule:
-      interval: 'daily'
+      interval: 'weekly'
+      day: 'monday'
       time: "16:00"
+      timezone: "UTC"
     target-branch: 'main'
     commit-message:
       prefix: 'chore(deps-docker): '
+    rebase-strategy: "auto"
 
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
-      interval: 'daily'
+      interval: 'weekly'
+      day: 'monday'
       time: "17:00"
+      timezone: "UTC"
     target-branch: 'main'
     commit-message:
-      prefix: 'chore(deps-gh-actions): '
+      prefix: 'ci(deps): '
+    rebase-strategy: "auto"

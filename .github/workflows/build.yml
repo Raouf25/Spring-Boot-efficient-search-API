@@ -1,51 +1,96 @@
 name: SonarCloud
+
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  REGISTRY: docker.io
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
 
 jobs:
   build:
+    name: Build and Analyze
     uses: ./.github/workflows/reusable-build.yml
     secrets: inherit
 
   docker:
-    # docker-repository:  https://hub.docker.com/r/raouf25/spring-boot-efficient-search-api
-    name: Build & push in Docker Hub
+    name: Build & Push Docker Image
     needs: build
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: raouf25/spring-boot-efficient-search-api
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            raouf25/spring-boot-efficient-search-api:1.0.0  
-            raouf25/spring-boot-efficient-search-api:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
+    name: Deploy to Fly.io
     environment:
-      name: dev-environment
+      name: production
       url: https://spring-boot-efficient-search-api.fly.dev/api/cars
-    name: Deploy app
     needs: docker
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v6
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Deploy with Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Execute deployment
+        run: flyctl deploy --remote-only
+
+      - name: Verify deployment
+        run: |
+          sleep 10
+          curl -f https://spring-boot-efficient-search-api.fly.dev/api/cars || exit 1
