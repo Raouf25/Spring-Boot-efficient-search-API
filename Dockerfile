@@ -75,7 +75,7 @@ ENV JAVA_HOME=/jre \
     TZ=UTC
 
 # Copy the custom JRE from the previous stage
-COPY --from=build-jre /customjre $JAVA_HOME
+COPY --from=build-jre /customjre /jre/
 
 # Create a non-root user for security
 ARG APPLICATION_USER=appuser
@@ -98,7 +98,7 @@ COPY --chown=${APPLICATION_UID}:${APPLICATION_UID} --from=maven_build /build/tar
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD java -cp /app/app.jar org.springframework.boot.loader.JarLauncher 2>/dev/null || exit 1
+    CMD /jre/bin/java -cp /app/app.jar org.springframework.boot.loader.JarLauncher 2>/dev/null || exit 1
 
 # Expose the application port
 EXPOSE 8080
@@ -107,7 +107,7 @@ EXPOSE 8080
 ENV JAVA_OPTS="-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=35 -XX:+DisableExplicitGC"
 
 # Run the application
-ENTRYPOINT [ "java", "-jar", "/app/app.jar" ]
+ENTRYPOINT [ "/jre/bin/java", "-jar", "/app/app.jar" ]
 
 
 # docker build -t spring-boot-efficient-search-api-0  . -f ./Dockerfile_default
