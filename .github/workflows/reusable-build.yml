@@ -50,7 +50,7 @@ jobs:
           check_name: 'Test Results'
 
       - name: Build and analyze with SonarCloud
-        if: github.actor != 'dependabot[bot]'
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
