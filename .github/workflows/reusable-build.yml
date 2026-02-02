@@ -50,7 +50,7 @@ jobs:
           check_name: 'Test Results'
 
       - name: Build and analyze with SonarCloud
-        if: github.event_name != 'pull_request' || github.actor != 'dependabot[bot]'
+        if: github.actor != 'dependabot[bot]'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
