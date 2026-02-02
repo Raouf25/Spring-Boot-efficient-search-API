@@ -50,6 +50,10 @@ jobs:
           check_name: 'Test Results'
 
       - name: Build and analyze with SonarCloud
+        # Runs for all workflows including bots. Uses continue-on-error to prevent
+        # workflow failure when SONAR_TOKEN is unavailable (e.g., Dependabot PRs).
+        # Repository admins can grant Dependabot access to SONAR_TOKEN in Settings > Secrets.
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
