@@ -47,7 +47,7 @@ jobs:
 
       - name: Generate image metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: raouf25/spring-boot-efficient-search-api
           tags: |
